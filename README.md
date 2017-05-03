@@ -19,5 +19,5 @@ quickly switch back to a "vanilla" ECS client)
 
 
 [blox]: https://github.com/blox/blox
-[godoc-badge]: https://godoc.segment.com/github.com/segmentio/ecs-blox?status.svg
-[godoc]: https://godoc.segment.com/github.com/segmentio/ecs-blox
+[godoc-badge]: https://godoc.org/github.com/segmentio/ecs-blox?status.svg
+[godoc]: https://godoc.org/github.com/segmentio/ecs-blox
