@@ -4,10 +4,14 @@ import (
 	"context"
 	"testing"
 
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/request"
 	"github.com/aws/aws-sdk-go/service/ecs"
 	"github.com/aws/aws-sdk-go/service/ecs/ecsiface"
+	"github.com/go-openapi/runtime"
 	blox "github.com/segmentio/ecs-blox/blox/client"
+	"github.com/segmentio/ecs-blox/blox/client/operations"
+	"github.com/segmentio/ecs-blox/blox/models"
 	"github.com/segmentio/ecs-blox/testutils"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
@@ -33,7 +37,7 @@ func (suite *TestClientSuite) SetupSuite() {
 	}
 }
 
-func (suite *TestClientSuite) AfterTest() {
+func (suite *TestClientSuite) TearDownTest() {
 	t := suite.T()
 	suite.ecs.AssertExpectations(t)
 	suite.blox.AssertExpectations(t)
@@ -556,21 +560,144 @@ func (suite *TestClientSuite) TestListClustersPagesWithContext() {
 	suite.NoError(suite.client.ListClustersPagesWithContext(ctx, &input, fn))
 }
 
-func (suite *TestClientSuite) TestListContainerInstances() {
-	input := ecs.ListContainerInstancesInput{}
-	output := ecs.ListContainerInstancesOutput{}
-	suite.ecs.On("ListContainerInstances", &input).Once().Return(&output, nil)
+func (suite *TestClientSuite) TestListContainerInstancesBlox() {
+	input := ecs.ListContainerInstancesInput{
+		Cluster: aws.String("default"),
+		Status:  aws.String("RUNNING"),
+	}
+	output := ecs.ListContainerInstancesOutput{
+		ContainerInstanceArns: []*string{aws.String("instance_1")},
+	}
+
+	request := runtime.ClientOperation{
+		ID:                 "ListInstances",
+		Method:             "GET",
+		PathPattern:        "/instances",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params: &operations.ListInstancesParams{
+			Cluster: aws.String("default"),
+			Status:  aws.String("RUNNING"),
+		},
+		Reader: new(operations.ListInstancesReader),
+	}
+	response := operations.ListInstancesOK{
+		Payload: &models.ContainerInstances{
+			Items: []*models.ContainerInstance{
+				&models.ContainerInstance{
+					Entity: &models.ContainerInstanceDetail{
+						ContainerInstanceARN: aws.String("instance_1"),
+					},
+				},
+			},
+		},
+	}
+	suite.blox.On("Submit", &request).Once().Return(&response, nil)
 
 	out, err := suite.client.ListContainerInstances(&input)
 	suite.NoError(err)
 	suite.EqualValues(&output, out)
 }
 
-func (suite *TestClientSuite) TestListContainerInstancesWithContext() {
+func (suite *TestClientSuite) TestListContainerInstancesBloxError() {
+	input := ecs.ListContainerInstancesInput{
+		Cluster: aws.String("default"),
+		Status:  aws.String("RUNNING"),
+	}
+	output := ecs.ListContainerInstancesOutput{
+		ContainerInstanceArns: []*string{aws.String("instance_1")},
+	}
+	suite.ecs.On("ListContainerInstances", &input).Once().Return(&output, nil)
+
+	request := runtime.ClientOperation{
+		ID:                 "ListInstances",
+		Method:             "GET",
+		PathPattern:        "/instances",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params: &operations.ListInstancesParams{
+			Cluster: aws.String("default"),
+			Status:  aws.String("RUNNING"),
+		},
+		Reader: new(operations.ListInstancesReader),
+	}
+	response := operations.NewListInstancesInternalServerError()
+	suite.blox.On("Submit", &request).Once().Return(nil, response)
+
+	out, err := suite.client.ListContainerInstances(&input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
+}
+
+func (suite *TestClientSuite) TestListContainerInstancesWithContextBlox() {
 	ctx := context.TODO()
-	input := ecs.ListContainerInstancesInput{}
-	output := ecs.ListContainerInstancesOutput{}
+	input := ecs.ListContainerInstancesInput{
+		Cluster: aws.String("default"),
+		Status:  aws.String("RUNNING"),
+	}
+	output := ecs.ListContainerInstancesOutput{
+		ContainerInstanceArns: []*string{aws.String("instance_1")},
+	}
+
+	request := runtime.ClientOperation{
+		ID:                 "ListInstances",
+		Method:             "GET",
+		PathPattern:        "/instances",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params: &operations.ListInstancesParams{
+			Cluster: aws.String("default"),
+			Status:  aws.String("RUNNING"),
+		},
+		Reader: new(operations.ListInstancesReader),
+	}
+	response := operations.ListInstancesOK{
+		Payload: &models.ContainerInstances{
+			Items: []*models.ContainerInstance{
+				&models.ContainerInstance{
+					Entity: &models.ContainerInstanceDetail{
+						ContainerInstanceARN: aws.String("instance_1"),
+					},
+				},
+			},
+		},
+	}
+	suite.blox.On("Submit", &request).Once().Return(&response, nil)
+
+	out, err := suite.client.ListContainerInstancesWithContext(ctx, &input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
+}
+
+func (suite *TestClientSuite) TestListContainerInstancesWithContextBloxError() {
+	ctx := context.TODO()
+	input := ecs.ListContainerInstancesInput{
+		Cluster: aws.String("default"),
+		Status:  aws.String("RUNNING"),
+	}
+	output := ecs.ListContainerInstancesOutput{
+		ContainerInstanceArns: []*string{aws.String("instance_1")},
+	}
 	suite.ecs.On("ListContainerInstancesWithContext", ctx, &input).Once().Return(&output, nil)
+
+	request := runtime.ClientOperation{
+		ID:                 "ListInstances",
+		Method:             "GET",
+		PathPattern:        "/instances",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params: &operations.ListInstancesParams{
+			Cluster: aws.String("default"),
+			Status:  aws.String("RUNNING"),
+		},
+		Reader: new(operations.ListInstancesReader),
+	}
+	response := operations.NewListInstancesInternalServerError()
+	suite.blox.On("Submit", &request).Once().Return(nil, response)
 
 	out, err := suite.client.ListContainerInstancesWithContext(ctx, &input)
 	suite.NoError(err)

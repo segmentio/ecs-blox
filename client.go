@@ -1,16 +1,11 @@
 package ecs
 
 import (
-	"fmt"
-
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/request"
 	"github.com/aws/aws-sdk-go/service/ecs"
 	"github.com/aws/aws-sdk-go/service/ecs/ecsiface"
 	blox "github.com/segmentio/ecs-blox/blox/client"
-	"github.com/segmentio/ecs-blox/blox/client/operations"
-	"github.com/segmentio/kit/log"
-	"github.com/segmentio/kit/stats"
 )
 
 type Client struct {
@@ -141,21 +136,21 @@ func (c *Client) DescribeClustersRequest(input *ecs.DescribeClustersInput) (*req
 // Describe Container Instances
 
 func (c *Client) DescribeContainerInstances(input *ecs.DescribeContainerInstancesInput) (*ecs.DescribeContainerInstancesOutput, error) {
-	if output, err := c.bloxDescribeContainerInstances(input); err != nil {
-		c.bloxRecordFailure("DescribeContainerInstances", input, err)
-		return c.ecs.DescribeContainerInstances(input)
-	} else {
-		return output, nil
-	}
+	// if output, err := c.bloxDescribeContainerInstances(input); err != nil {
+	// 	c.bloxRecordFailure("DescribeContainerInstances", input, err)
+	return c.ecs.DescribeContainerInstances(input)
+	// } else {
+	// 	return output, nil
+	// }
 }
 
 func (c *Client) DescribeContainerInstancesWithContext(ctx aws.Context, input *ecs.DescribeContainerInstancesInput, options ...request.Option) (*ecs.DescribeContainerInstancesOutput, error) {
-	c.bloxRecordUnsupported("DescribeContainerInstancesWithContext", input)
+	// c.bloxRecordUnsupportedMethod("DescribeContainerInstancesWithContext", input)
 	return c.ecs.DescribeContainerInstancesWithContext(ctx, input, options...)
 }
 
 func (c *Client) DescribeContainerInstancesRequest(input *ecs.DescribeContainerInstancesInput) (*request.Request, *ecs.DescribeContainerInstancesOutput) {
-	c.bloxRecordUnsupported("DescribeContainerInstancesRequest", input)
+	// c.bloxRecordUnsupportedMethod("DescribeContainerInstancesRequest", input)
 	return c.ecs.DescribeContainerInstancesRequest(input)
 }
 
@@ -190,21 +185,21 @@ func (c *Client) DescribeTaskDefinitionRequest(input *ecs.DescribeTaskDefinition
 // Describe Tasks
 
 func (c *Client) DescribeTasks(input *ecs.DescribeTasksInput) (*ecs.DescribeTasksOutput, error) {
-	if output, err := c.bloxDescribeTasks(input); err != nil {
-		c.bloxRecordFailure("DescribeTasks", input, err)
-		return c.ecs.DescribeTasks(input)
-	} else {
-		return output, nil
-	}
+	// if output, err := c.bloxDescribeTasks(input); err != nil {
+	// 	c.bloxRecordFailure("DescribeTasks", input, err)
+	return c.ecs.DescribeTasks(input)
+	// } else {
+	// 	return output, nil
+	// }
 }
 
 func (c *Client) DescribeTasksWithContext(ctx aws.Context, input *ecs.DescribeTasksInput, options ...request.Option) (*ecs.DescribeTasksOutput, error) {
-	c.bloxRecordUnsupported("DescribeTasksWithContext", input)
+	// c.bloxRecordUnsupported("DescribeTasksWithContext", input)
 	return c.ecs.DescribeTasksWithContext(ctx, input, options...)
 }
 
 func (c *Client) DescribeTasksRequest(input *ecs.DescribeTasksInput) (*request.Request, *ecs.DescribeTasksOutput) {
-	c.bloxRecordUnsupported("DescribeTasksRequest", input)
+	// c.bloxRecordUnsupported("DescribeTasksRequest", input)
 	return c.ecs.DescribeTasksRequest(input)
 }
 
@@ -261,22 +256,35 @@ func (c *Client) ListClustersPagesWithContext(ctx aws.Context, input *ecs.ListCl
 // List Container Instances
 
 func (c *Client) ListContainerInstances(input *ecs.ListContainerInstancesInput) (*ecs.ListContainerInstancesOutput, error) {
-	return c.ecs.ListContainerInstances(input)
+	if out, err := c.bloxListContainerInstances(nil, input); err != nil {
+		c.bloxRecordFailure("ListContainerInstances", input, err)
+		return c.ecs.ListContainerInstances(input)
+	} else {
+		return out, nil
+	}
 }
 
 func (c *Client) ListContainerInstancesWithContext(ctx aws.Context, input *ecs.ListContainerInstancesInput, options ...request.Option) (*ecs.ListContainerInstancesOutput, error) {
-	return c.ecs.ListContainerInstancesWithContext(ctx, input, options...)
+	if out, err := c.bloxListContainerInstances(ctx, input); err != nil {
+		c.bloxRecordFailure("ListContainerInstancesWithContext", input, err)
+		return c.ecs.ListContainerInstancesWithContext(ctx, input, options...)
+	} else {
+		return out, nil
+	}
 }
 
 func (c *Client) ListContainerInstancesRequest(input *ecs.ListContainerInstancesInput) (*request.Request, *ecs.ListContainerInstancesOutput) {
+	c.bloxRecordUnsupportedMethod("ListContainerInstancesRequest", input)
 	return c.ecs.ListContainerInstancesRequest(input)
 }
 
 func (c *Client) ListContainerInstancesPages(input *ecs.ListContainerInstancesInput, fn func(*ecs.ListContainerInstancesOutput, bool) bool) error {
+	c.bloxRecordUnsupportedMethod("ListContainerInstancesPages", input)
 	return c.ecs.ListContainerInstancesPages(input, fn)
 }
 
 func (c *Client) ListContainerInstancesPagesWithContext(ctx aws.Context, input *ecs.ListContainerInstancesInput, fn func(*ecs.ListContainerInstancesOutput, bool) bool, options ...request.Option) error {
+	c.bloxRecordUnsupportedMethod("ListContainerInstancesPagesWithContext", input)
 	return c.ecs.ListContainerInstancesPagesWithContext(ctx, input, fn, options...)
 }
 
@@ -560,68 +568,4 @@ func (c *Client) WaitUntilTasksStopped(input *ecs.DescribeTasksInput) error {
 
 func (c *Client) WaitUntilTasksStoppedWithContext(ctx aws.Context, input *ecs.DescribeTasksInput, options ...request.WaiterOption) error {
 	return c.ecs.WaitUntilTasksStoppedWithContext(ctx, input, options...)
-}
-
-// blox helpers
-
-func (c *Client) bloxDescribeContainerInstances(input *ecs.DescribeContainerInstancesInput) (*ecs.DescribeContainerInstancesOutput, error) {
-	instances := make([]*ecs.ContainerInstance, 0, len(input.ContainerInstances))
-	failures := make([]*ecs.Failure, 0, len(input.ContainerInstances))
-
-	for _, arn := range input.ContainerInstances {
-		params := operations.GetInstanceParams{Cluster: *input.Cluster, Arn: *arn}
-		if instance, err := c.blox.Operations.GetInstance(&params); err != nil {
-			return nil, err
-		} else if instance.Error() != "" {
-			failures = append(failures, ECSFailure(*arn, instance))
-		} else {
-			instances = append(instances, BloxToECSContainerInstance(instance.Payload))
-		}
-	}
-
-	output := new(ecs.DescribeContainerInstancesOutput)
-	output.SetFailures(failures)
-	output.SetContainerInstances(instances)
-	return output, nil
-}
-
-func (c *Client) bloxDescribeTasks(input *ecs.DescribeTasksInput) (*ecs.DescribeTasksOutput, error) {
-	tasks := make([]*ecs.Task, 0, len(input.Tasks))
-	failures := make([]*ecs.Failure, 0, len(input.Tasks))
-
-	for _, arn := range input.Tasks {
-		params := operations.GetTaskParams{Cluster: *input.Cluster, Arn: *arn}
-		if task, err := c.blox.Operations.GetTask(&params); err != nil {
-			return nil, err
-		} else if task.Error() != "" {
-			failures = append(failures, ECSFailure(*arn, task))
-		} else {
-			tasks = append(tasks, BloxToECSTask(task.Payload))
-		}
-	}
-
-	output := new(ecs.DescribeTasksOutput)
-	if len(failures) > 0 {
-		output.SetFailures(failures)
-	}
-	if len(tasks) > 0 {
-		output.SetTasks(tasks)
-	}
-	return output, nil
-}
-
-func (c *Client) bloxRecordFailure(method string, input interface{}, err error) {
-	stats.Incr("blox.failures", fmt.Sprintf("method:%s", method))
-	log.With(log.M{
-		"method": method,
-		"input":  input,
-	}).WithError(err).Warn("blox failure detected, falling back to ECS")
-}
-
-func (c *Client) bloxRecordUnsupported(method string, input interface{}) {
-	stats.Incr("blox.unsupportable", fmt.Sprintf("method:%s", method))
-	log.With(log.M{
-		"method": method,
-		"input":  input,
-	}).Warn("unable to support blox for method, using ECS directly")
 }
