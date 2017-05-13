@@ -9,1568 +9,1228 @@ import (
 	"github.com/aws/aws-sdk-go/service/ecs/ecsiface"
 	blox "github.com/segmentio/ecs-blox/blox/client"
 	"github.com/segmentio/ecs-blox/testutils"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/suite"
 )
 
-func TestClientImplementsECS(t *testing.T) {
+type TestClientSuite struct {
+	suite.Suite
+	ecs    *testutils.ECSAPI
+	blox   *testutils.BloxTransport
+	client *Client
+}
+
+func TestClient(t *testing.T) {
+	suite.Run(t, new(TestClientSuite))
+}
+
+func (suite *TestClientSuite) SetupSuite() {
+	suite.ecs = new(testutils.ECSAPI)
+	suite.blox = new(testutils.BloxTransport)
+	suite.client = &Client{
+		blox: blox.New(suite.blox, nil),
+		ecs:  suite.ecs,
+	}
+}
+
+func (suite *TestClientSuite) AfterTest() {
+	t := suite.T()
+	suite.ecs.AssertExpectations(t)
+	suite.blox.AssertExpectations(t)
+}
+
+func (suite *TestClientSuite) TestImplements() {
 	c := new(Client)
-	assert.Implements(t, (*ecsiface.ECSAPI)(nil), c)
+	suite.Implements((*ecsiface.ECSAPI)(nil), c)
 }
 
-func TestClientCreateCluster(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestCreateCluster() {
+	input := ecs.CreateClusterInput{}
+	output := ecs.CreateClusterOutput{}
+	suite.ecs.On("CreateCluster", &input).Once().Return(&output, nil)
 
-	input := new(ecs.CreateClusterInput)
-	output := new(ecs.CreateClusterOutput)
-	m.On("CreateCluster", input).Once().Return(output, nil)
-
-	c := Client{ecs: m}
-	c.CreateCluster(input)
-
-	m.AssertExpectations(t)
+	out, err := suite.client.CreateCluster(&input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientCreateClusterWithContext(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestCreateClusterWithContext() {
+	ctx := context.TODO()
+	input := ecs.CreateClusterInput{}
+	output := ecs.CreateClusterOutput{}
+	suite.ecs.On("CreateClusterWithContext", ctx, &input).Once().Return(&output, nil)
+
+	out, err := suite.client.CreateClusterWithContext(ctx, &input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
+}
+
+func (suite *TestClientSuite) TestCreateClusterRequest() {
+	input := ecs.CreateClusterInput{}
+	request := request.Request{}
+	output := ecs.CreateClusterOutput{}
+	suite.ecs.On("CreateClusterRequest", &input).Once().Return(&request, &output)
+
+	req, out := suite.client.CreateClusterRequest(&input)
+	suite.EqualValues(&request, req)
+	suite.EqualValues(&output, out)
+}
+
+func (suite *TestClientSuite) TestCreateService() {
+	input := ecs.CreateServiceInput{}
+	output := ecs.CreateServiceOutput{}
+	suite.ecs.On("CreateService", &input).Once().Return(&output, nil)
+
+	out, err := suite.client.CreateService(&input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
+}
+
+func (suite *TestClientSuite) TestCreateServiceWithContext() {
+	ctx := context.TODO()
+	input := ecs.CreateServiceInput{}
+	output := ecs.CreateServiceOutput{}
+	suite.ecs.On("CreateServiceWithContext", ctx, &input).Once().Return(&output, nil)
+
+	out, err := suite.client.CreateServiceWithContext(ctx, &input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
+}
+
+func (suite *TestClientSuite) TestCreateServiceRequest() {
+	input := ecs.CreateServiceInput{}
+	request := request.Request{}
+	output := ecs.CreateServiceOutput{}
+	suite.ecs.On("CreateServiceRequest", &input).Once().Return(&request, &output)
+
+	req, out := suite.client.CreateServiceRequest(&input)
+	suite.EqualValues(&request, req)
+	suite.EqualValues(&output, out)
+}
+
+func (suite *TestClientSuite) TestDeleteAttributes() {
+	input := ecs.DeleteAttributesInput{}
+	output := ecs.DeleteAttributesOutput{}
+	suite.ecs.On("DeleteAttributes", &input).Once().Return(&output, nil)
+
+	out, err := suite.client.DeleteAttributes(&input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
+}
+
+func (suite *TestClientSuite) TestDeleteAttributesWithContext() {
+	ctx := context.TODO()
+	input := ecs.DeleteAttributesInput{}
+	output := ecs.DeleteAttributesOutput{}
+	suite.ecs.On("DeleteAttributesWithContext", ctx, &input).Once().Return(&output, nil)
+
+	out, err := suite.client.DeleteAttributesWithContext(ctx, &input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
+}
+
+func (suite *TestClientSuite) TestDeleteAttributesRequest() {
+	input := ecs.DeleteAttributesInput{}
+	request := request.Request{}
+	output := ecs.DeleteAttributesOutput{}
+	suite.ecs.On("DeleteAttributesRequest", &input).Once().Return(&request, &output)
+
+	req, out := suite.client.DeleteAttributesRequest(&input)
+	suite.EqualValues(&request, req)
+	suite.EqualValues(&output, out)
+}
+
+func (suite *TestClientSuite) TestDeleteCluster() {
+	input := ecs.DeleteClusterInput{}
+	output := ecs.DeleteClusterOutput{}
+	suite.ecs.On("DeleteCluster", &input).Once().Return(&output, nil)
+
+	out, err := suite.client.DeleteCluster(&input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
+}
+
+func (suite *TestClientSuite) TestDeleteClusterWithContext() {
+	ctx := context.TODO()
+	input := ecs.DeleteClusterInput{}
+	output := ecs.DeleteClusterOutput{}
+	suite.ecs.On("DeleteClusterWithContext", ctx, &input).Once().Return(&output, nil)
+
+	out, err := suite.client.DeleteClusterWithContext(ctx, &input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
+}
+
+func (suite *TestClientSuite) TestDeleteClusterRequest() {
+	input := ecs.DeleteClusterInput{}
+	request := request.Request{}
+	output := ecs.DeleteClusterOutput{}
+	suite.ecs.On("DeleteClusterRequest", &input).Once().Return(&request, &output)
+
+	req, out := suite.client.DeleteClusterRequest(&input)
+	suite.EqualValues(&request, req)
+	suite.EqualValues(&output, out)
+}
+
+func (suite *TestClientSuite) TestDeleteService() {
+	input := ecs.DeleteServiceInput{}
+	output := ecs.DeleteServiceOutput{}
+	suite.ecs.On("DeleteService", &input).Once().Return(&output, nil)
+
+	out, err := suite.client.DeleteService(&input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
+}
+
+func (suite *TestClientSuite) TestDeleteServiceWithContext() {
+	ctx := context.TODO()
+	input := ecs.DeleteServiceInput{}
+	output := ecs.DeleteServiceOutput{}
+	suite.ecs.On("DeleteServiceWithContext", ctx, &input).Once().Return(&output, nil)
+
+	out, err := suite.client.DeleteServiceWithContext(ctx, &input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
+}
+
+func (suite *TestClientSuite) TestDeleteServiceRequest() {
+	input := ecs.DeleteServiceInput{}
+	request := request.Request{}
+	output := ecs.DeleteServiceOutput{}
+	suite.ecs.On("DeleteServiceRequest", &input).Once().Return(&request, &output)
+
+	req, out := suite.client.DeleteServiceRequest(&input)
+	suite.EqualValues(&request, req)
+	suite.EqualValues(&output, out)
+}
+
+func (suite *TestClientSuite) TestDeregisterContainerInstance() {
+	input := ecs.DeregisterContainerInstanceInput{}
+	output := ecs.DeregisterContainerInstanceOutput{}
+	suite.ecs.On("DeregisterContainerInstance", &input).Once().Return(&output, nil)
+
+	out, err := suite.client.DeregisterContainerInstance(&input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
+}
+
+func (suite *TestClientSuite) TestDeregisterContainerInstanceWithContext() {
+	ctx := context.TODO()
+	input := ecs.DeregisterContainerInstanceInput{}
+	output := ecs.DeregisterContainerInstanceOutput{}
+	suite.ecs.On("DeregisterContainerInstanceWithContext", ctx, &input).Once().Return(&output, nil)
+
+	out, err := suite.client.DeregisterContainerInstanceWithContext(ctx, &input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
+}
+
+func (suite *TestClientSuite) TestDeregisterContainerInstanceRequest() {
+	input := ecs.DeregisterContainerInstanceInput{}
+	request := request.Request{}
+	output := ecs.DeregisterContainerInstanceOutput{}
+	suite.ecs.On("DeregisterContainerInstanceRequest", &input).Once().Return(&request, &output)
+
+	req, out := suite.client.DeregisterContainerInstanceRequest(&input)
+	suite.EqualValues(&request, req)
+	suite.EqualValues(&output, out)
+}
+
+func (suite *TestClientSuite) TestDeregisterTaskDefinition() {
+	input := ecs.DeregisterTaskDefinitionInput{}
+	output := ecs.DeregisterTaskDefinitionOutput{}
+	suite.ecs.On("DeregisterTaskDefinition", &input).Once().Return(&output, nil)
+
+	out, err := suite.client.DeregisterTaskDefinition(&input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
+}
+
+func (suite *TestClientSuite) TestDeregisterTaskDefinitionWithContext() {
+	ctx := context.TODO()
+	input := ecs.DeregisterTaskDefinitionInput{}
+	output := ecs.DeregisterTaskDefinitionOutput{}
+	suite.ecs.On("DeregisterTaskDefinitionWithContext", ctx, &input).Once().Return(&output, nil)
+
+	out, err := suite.client.DeregisterTaskDefinitionWithContext(ctx, &input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
+}
+
+func (suite *TestClientSuite) TestDeregisterTaskDefinitionRequest() {
+
+	input := ecs.DeregisterTaskDefinitionInput{}
+	request := request.Request{}
+	output := ecs.DeregisterTaskDefinitionOutput{}
+	suite.ecs.On("DeregisterTaskDefinitionRequest", &input).Once().Return(&request, &output)
+
+	req, out := suite.client.DeregisterTaskDefinitionRequest(&input)
+	suite.EqualValues(&request, req)
+	suite.EqualValues(&output, out)
+}
+
+func (suite *TestClientSuite) TestDescribeClusters() {
+	input := ecs.DescribeClustersInput{}
+	output := ecs.DescribeClustersOutput{}
+	suite.ecs.On("DescribeClusters", &input).Once().Return(&output, nil)
+
+	out, err := suite.client.DescribeClusters(&input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
+}
+
+func (suite *TestClientSuite) TestDescribeClustersWithContext() {
+	ctx := context.TODO()
+	input := ecs.DescribeClustersInput{}
+	output := ecs.DescribeClustersOutput{}
+	suite.ecs.On("DescribeClustersWithContext", ctx, &input).Once().Return(&output, nil)
+
+	out, err := suite.client.DescribeClustersWithContext(ctx, &input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
+}
+
+func (suite *TestClientSuite) TestDescribeClustersRequest() {
+	input := ecs.DescribeClustersInput{}
+	request := request.Request{}
+	output := ecs.DescribeClustersOutput{}
+	suite.ecs.On("DescribeClustersRequest", &input).Once().Return(&request, &output)
+
+	req, out := suite.client.DescribeClustersRequest(&input)
+	suite.EqualValues(&request, req)
+	suite.EqualValues(&output, out)
+}
+
+func (suite *TestClientSuite) TestDescribeContainerInstancesBloxLayer() {
+	// m := testutils.NewECS()
+	// b := testutils.NewBlox()
+	//
+	// b.Transport.On("Submit", mock.Anything).Once().Return(nil, nil)
+	//
+	// input := ecs.DescribeContainerInstancesInput{
+	// 	Cluster: aws.String("default"),
+	// }
+	// output := ecs.DescribeContainerInstancesOutput{}
+	// suite.ecs.On("DescribeContainerInstances", &input).Once().Return(&output, nil)
+	//
+	// c := Client{ecs: m, blox: b.Client}
+	// actual, err := suite.client.DescribeContainerInstances(&input)
+	// assert.NoError(t, err)
+	// assert.EqualValues(t, &output, actual)
+
+}
+
+func (suite *TestClientSuite) TestDescribeContainerInstancesWithContext() {
+	ctx := context.TODO()
+	input := ecs.DescribeContainerInstancesInput{}
+	output := ecs.DescribeContainerInstancesOutput{}
+	suite.ecs.On("DescribeContainerInstancesWithContext", ctx, &input).Once().Return(&output, nil)
+
+	out, err := suite.client.DescribeContainerInstancesWithContext(ctx, &input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
+}
+
+func (suite *TestClientSuite) TestDescribeContainerInstancesRequest() {
+	input := ecs.DescribeContainerInstancesInput{}
+	request := request.Request{}
+	output := ecs.DescribeContainerInstancesOutput{}
+	suite.ecs.On("DescribeContainerInstancesRequest", &input).Once().Return(&request, &output)
+
+	req, out := suite.client.DescribeContainerInstancesRequest(&input)
+	suite.EqualValues(&request, req)
+	suite.EqualValues(&output, out)
+}
+
+func (suite *TestClientSuite) TestDescribeServices() {
+	input := ecs.DescribeServicesInput{}
+	output := ecs.DescribeServicesOutput{}
+	suite.ecs.On("DescribeServices", &input).Once().Return(&output, nil)
+
+	out, err := suite.client.DescribeServices(&input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
+}
+
+func (suite *TestClientSuite) TestDescribeServicesWithContext() {
+	ctx := context.TODO()
+	input := ecs.DescribeServicesInput{}
+	output := ecs.DescribeServicesOutput{}
+	suite.ecs.On("DescribeServicesWithContext", ctx, &input).Once().Return(&output, nil)
+
+	out, err := suite.client.DescribeServicesWithContext(ctx, &input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
+}
+
+func (suite *TestClientSuite) TestDescribeServicesRequest() {
+	input := ecs.DescribeServicesInput{}
+	request := request.Request{}
+	output := ecs.DescribeServicesOutput{}
+	suite.ecs.On("DescribeServicesRequest", &input).Once().Return(&request, &output)
+
+	req, out := suite.client.DescribeServicesRequest(&input)
+	suite.EqualValues(&request, req)
+	suite.EqualValues(&output, out)
+}
+
+func (suite *TestClientSuite) TestDescribeTaskDefinition() {
+	input := ecs.DescribeTaskDefinitionInput{}
+	output := ecs.DescribeTaskDefinitionOutput{}
+	suite.ecs.On("DescribeTaskDefinition", &input).Once().Return(&output, nil)
+
+	out, err := suite.client.DescribeTaskDefinition(&input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
+}
+
+func (suite *TestClientSuite) TestDescribeTaskDefinitionWithContext() {
 
 	ctx := context.TODO()
-	input := new(ecs.CreateClusterInput)
-	output := new(ecs.CreateClusterOutput)
-	m.On("CreateClusterWithContext", ctx, input).Once().Return(output, nil)
+	input := ecs.DescribeTaskDefinitionInput{}
+	output := ecs.DescribeTaskDefinitionOutput{}
+	suite.ecs.On("DescribeTaskDefinitionWithContext", ctx, &input).Once().Return(&output, nil)
 
-	c := Client{ecs: m}
-	c.CreateClusterWithContext(ctx, input)
-
-	m.AssertExpectations(t)
+	out, err := suite.client.DescribeTaskDefinitionWithContext(ctx, &input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientCreateClusterRequest(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestDescribeTaskDefinitionRequest() {
+	input := ecs.DescribeTaskDefinitionInput{}
+	request := request.Request{}
+	output := ecs.DescribeTaskDefinitionOutput{}
+	suite.ecs.On("DescribeTaskDefinitionRequest", &input).Once().Return(&request, &output)
 
-	input := new(ecs.CreateClusterInput)
-	request := new(request.Request)
-	output := new(ecs.CreateClusterOutput)
-	m.On("CreateClusterRequest", input).Once().Return(request, output)
-
-	c := Client{ecs: m}
-	c.CreateClusterRequest(input)
-
-	m.AssertExpectations(t)
+	req, out := suite.client.DescribeTaskDefinitionRequest(&input)
+	suite.EqualValues(&request, req)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientCreateService(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestDescribeTasks() {
+	input := ecs.DescribeTasksInput{}
+	output := ecs.DescribeTasksOutput{}
+	suite.ecs.On("DescribeTasks", &input).Once().Return(&output, nil)
 
-	input := new(ecs.CreateServiceInput)
-	output := new(ecs.CreateServiceOutput)
-	m.On("CreateService", input).Once().Return(output, nil)
-
-	c := Client{ecs: m}
-	c.CreateService(input)
-
-	m.AssertExpectations(t)
+	out, err := suite.client.DescribeTasks(&input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientCreateServiceWithContext(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
+func (suite *TestClientSuite) TestDescribeTasksWithContext() {
 	ctx := context.TODO()
-	input := new(ecs.CreateServiceInput)
-	output := new(ecs.CreateServiceOutput)
-	m.On("CreateServiceWithContext", ctx, input).Once().Return(output, nil)
+	input := ecs.DescribeTasksInput{}
+	output := ecs.DescribeTasksOutput{}
+	suite.ecs.On("DescribeTasksWithContext", ctx, &input).Once().Return(&output, nil)
 
-	c := Client{ecs: m}
-	c.CreateServiceWithContext(ctx, input)
-
-	m.AssertExpectations(t)
+	out, err := suite.client.DescribeTasksWithContext(ctx, &input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientCreateServiceRequest(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestDescribeTasksRequest() {
+	input := ecs.DescribeTasksInput{}
+	request := request.Request{}
+	output := ecs.DescribeTasksOutput{}
+	suite.ecs.On("DescribeTasksRequest", &input).Once().Return(&request, &output)
 
-	input := new(ecs.CreateServiceInput)
-	request := new(request.Request)
-	output := new(ecs.CreateServiceOutput)
-	m.On("CreateServiceRequest", input).Once().Return(request, output)
-
-	c := Client{ecs: m}
-	c.CreateServiceRequest(input)
-
-	m.AssertExpectations(t)
+	req, out := suite.client.DescribeTasksRequest(&input)
+	suite.EqualValues(&request, req)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientDeleteAttributes(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestDiscoverPollEndpoint() {
+	input := ecs.DiscoverPollEndpointInput{}
+	output := ecs.DiscoverPollEndpointOutput{}
+	suite.ecs.On("DiscoverPollEndpoint", &input).Once().Return(&output, nil)
 
-	input := new(ecs.DeleteAttributesInput)
-	output := new(ecs.DeleteAttributesOutput)
-	m.On("DeleteAttributes", input).Once().Return(output, nil)
-
-	c := Client{ecs: m}
-	c.DeleteAttributes(input)
-
-	m.AssertExpectations(t)
+	out, err := suite.client.DiscoverPollEndpoint(&input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientDeleteAttributesWithContext(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
+func (suite *TestClientSuite) TestDiscoverPollEndpointWithContext() {
 	ctx := context.TODO()
-	input := new(ecs.DeleteAttributesInput)
-	output := new(ecs.DeleteAttributesOutput)
-	m.On("DeleteAttributesWithContext", ctx, input).Once().Return(output, nil)
+	input := ecs.DiscoverPollEndpointInput{}
+	output := ecs.DiscoverPollEndpointOutput{}
+	suite.ecs.On("DiscoverPollEndpointWithContext", ctx, &input).Once().Return(&output, nil)
 
-	c := Client{ecs: m}
-	c.DeleteAttributesWithContext(ctx, input)
-
-	m.AssertExpectations(t)
+	out, err := suite.client.DiscoverPollEndpointWithContext(ctx, &input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientDeleteAttributesRequest(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestDiscoverPollEndpointRequest() {
+	input := ecs.DiscoverPollEndpointInput{}
+	request := request.Request{}
+	output := ecs.DiscoverPollEndpointOutput{}
+	suite.ecs.On("DiscoverPollEndpointRequest", &input).Once().Return(&request, &output)
 
-	input := new(ecs.DeleteAttributesInput)
-	request := new(request.Request)
-	output := new(ecs.DeleteAttributesOutput)
-	m.On("DeleteAttributesRequest", input).Once().Return(request, output)
-
-	c := Client{ecs: m}
-	c.DeleteAttributesRequest(input)
-
-	m.AssertExpectations(t)
+	req, out := suite.client.DiscoverPollEndpointRequest(&input)
+	suite.EqualValues(&request, req)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientDeleteCluster(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestListAttributes() {
+	input := ecs.ListAttributesInput{}
+	output := ecs.ListAttributesOutput{}
+	suite.ecs.On("ListAttributes", &input).Once().Return(&output, nil)
 
-	input := new(ecs.DeleteClusterInput)
-	output := new(ecs.DeleteClusterOutput)
-	m.On("DeleteCluster", input).Once().Return(output, nil)
-
-	c := Client{ecs: m}
-	c.DeleteCluster(input)
-
-	m.AssertExpectations(t)
+	out, err := suite.client.ListAttributes(&input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientDeleteClusterWithContext(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
+func (suite *TestClientSuite) TestListAttributesWithContext() {
 	ctx := context.TODO()
-	input := new(ecs.DeleteClusterInput)
-	output := new(ecs.DeleteClusterOutput)
-	m.On("DeleteClusterWithContext", ctx, input).Once().Return(output, nil)
+	input := ecs.ListAttributesInput{}
+	output := ecs.ListAttributesOutput{}
+	suite.ecs.On("ListAttributesWithContext", ctx, &input).Once().Return(&output, nil)
 
-	c := Client{ecs: m}
-	c.DeleteClusterWithContext(ctx, input)
-
-	m.AssertExpectations(t)
+	out, err := suite.client.ListAttributesWithContext(ctx, &input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientDeleteClusterRequest(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestListAttributesRequest() {
+	input := ecs.ListAttributesInput{}
+	request := request.Request{}
+	output := ecs.ListAttributesOutput{}
+	suite.ecs.On("ListAttributesRequest", &input).Once().Return(&request, &output)
 
-	input := new(ecs.DeleteClusterInput)
-	request := new(request.Request)
-	output := new(ecs.DeleteClusterOutput)
-	m.On("DeleteClusterRequest", input).Once().Return(request, output)
-
-	c := Client{ecs: m}
-	c.DeleteClusterRequest(input)
-
-	m.AssertExpectations(t)
+	req, out := suite.client.ListAttributesRequest(&input)
+	suite.EqualValues(&request, req)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientDeleteService(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestListClusters() {
+	input := ecs.ListClustersInput{}
+	output := ecs.ListClustersOutput{}
+	suite.ecs.On("ListClusters", &input).Once().Return(&output, nil)
 
-	input := new(ecs.DeleteServiceInput)
-	output := new(ecs.DeleteServiceOutput)
-	m.On("DeleteService", input).Once().Return(output, nil)
-
-	c := Client{ecs: m}
-	c.DeleteService(input)
-
-	m.AssertExpectations(t)
+	out, err := suite.client.ListClusters(&input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientDeleteServiceWithContext(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
+func (suite *TestClientSuite) TestListClustersWithContext() {
 	ctx := context.TODO()
-	input := new(ecs.DeleteServiceInput)
-	output := new(ecs.DeleteServiceOutput)
-	m.On("DeleteServiceWithContext", ctx, input).Once().Return(output, nil)
+	input := ecs.ListClustersInput{}
+	output := ecs.ListClustersOutput{}
+	suite.ecs.On("ListClustersWithContext", ctx, &input).Once().Return(&output, nil)
 
-	c := Client{ecs: m}
-	c.DeleteServiceWithContext(ctx, input)
-
-	m.AssertExpectations(t)
+	out, err := suite.client.ListClustersWithContext(ctx, &input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientDeleteServiceRequest(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestListClustersRequest() {
+	input := ecs.ListClustersInput{}
+	request := request.Request{}
+	output := ecs.ListClustersOutput{}
+	suite.ecs.On("ListClustersRequest", &input).Once().Return(&request, &output)
 
-	input := new(ecs.DeleteServiceInput)
-	request := new(request.Request)
-	output := new(ecs.DeleteServiceOutput)
-	m.On("DeleteServiceRequest", input).Once().Return(request, output)
-
-	c := Client{ecs: m}
-	c.DeleteServiceRequest(input)
-
-	m.AssertExpectations(t)
+	req, out := suite.client.ListClustersRequest(&input)
+	suite.EqualValues(&request, req)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientDeregisterContainerInstance(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
-	input := new(ecs.DeregisterContainerInstanceInput)
-	output := new(ecs.DeregisterContainerInstanceOutput)
-	m.On("DeregisterContainerInstance", input).Once().Return(output, nil)
-
-	c := Client{ecs: m}
-	c.DeregisterContainerInstance(input)
-
-	m.AssertExpectations(t)
-}
-
-func TestClientDeregisterContainerInstanceWithContext(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
-	ctx := context.TODO()
-	input := new(ecs.DeregisterContainerInstanceInput)
-	output := new(ecs.DeregisterContainerInstanceOutput)
-	m.On("DeregisterContainerInstanceWithContext", ctx, input).Once().Return(output, nil)
-
-	c := Client{ecs: m}
-	c.DeregisterContainerInstanceWithContext(ctx, input)
-
-	m.AssertExpectations(t)
-}
-
-func TestClientDeregisterContainerInstanceRequest(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
-	input := new(ecs.DeregisterContainerInstanceInput)
-	request := new(request.Request)
-	output := new(ecs.DeregisterContainerInstanceOutput)
-	m.On("DeregisterContainerInstanceRequest", input).Once().Return(request, output)
-
-	c := Client{ecs: m}
-	c.DeregisterContainerInstanceRequest(input)
-
-	m.AssertExpectations(t)
-}
-
-func TestClientDeregisterTaskDefinition(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
-	input := new(ecs.DeregisterTaskDefinitionInput)
-	output := new(ecs.DeregisterTaskDefinitionOutput)
-	m.On("DeregisterTaskDefinition", input).Once().Return(output, nil)
-
-	c := Client{ecs: m}
-	c.DeregisterTaskDefinition(input)
-
-	m.AssertExpectations(t)
-}
-
-func TestClientDeregisterTaskDefinitionWithContext(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
-	ctx := context.TODO()
-	input := new(ecs.DeregisterTaskDefinitionInput)
-	output := new(ecs.DeregisterTaskDefinitionOutput)
-	m.On("DeregisterTaskDefinitionWithContext", ctx, input).Once().Return(output, nil)
-
-	c := Client{ecs: m}
-	c.DeregisterTaskDefinitionWithContext(ctx, input)
-
-	m.AssertExpectations(t)
-}
-
-func TestClientDeregisterTaskDefinitionRequest(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
-	input := new(ecs.DeregisterTaskDefinitionInput)
-	request := new(request.Request)
-	output := new(ecs.DeregisterTaskDefinitionOutput)
-	m.On("DeregisterTaskDefinitionRequest", input).Once().Return(request, output)
-
-	c := Client{ecs: m}
-	c.DeregisterTaskDefinitionRequest(input)
-
-	m.AssertExpectations(t)
-}
-
-func TestClientDescribeClusters(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
-	input := new(ecs.DescribeClustersInput)
-	output := new(ecs.DescribeClustersOutput)
-	m.On("DescribeClusters", input).Once().Return(output, nil)
-
-	c := Client{ecs: m}
-	c.DescribeClusters(input)
-
-	m.AssertExpectations(t)
-}
-
-func TestClientDescribeClustersWithContext(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
-	ctx := context.TODO()
-	input := new(ecs.DescribeClustersInput)
-	output := new(ecs.DescribeClustersOutput)
-	m.On("DescribeClustersWithContext", ctx, input).Once().Return(output, nil)
-
-	c := Client{ecs: m}
-	c.DescribeClustersWithContext(ctx, input)
-
-	m.AssertExpectations(t)
-}
-
-func TestClientDescribeClustersRequest(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
-	input := new(ecs.DescribeClustersInput)
-	request := new(request.Request)
-	output := new(ecs.DescribeClustersOutput)
-	m.On("DescribeClustersRequest", input).Once().Return(request, output)
-
-	c := Client{ecs: m}
-	c.DescribeClustersRequest(input)
-
-	m.AssertExpectations(t)
-}
-
-func TestClientDescribeContainerInstances(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
-	input := new(ecs.DescribeContainerInstancesInput)
-	output := new(ecs.DescribeContainerInstancesOutput)
-	m.On("DescribeContainerInstances", input).Once().Return(output, nil)
-
-	c := Client{ecs: m}
-	c.DescribeContainerInstances(input)
-
-	m.AssertExpectations(t)
-}
-
-func TestClientDescribeContainerInstancesWithContext(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
-	ctx := context.TODO()
-	input := new(ecs.DescribeContainerInstancesInput)
-	output := new(ecs.DescribeContainerInstancesOutput)
-	m.On("DescribeContainerInstancesWithContext", ctx, input).Once().Return(output, nil)
-
-	c := Client{ecs: m}
-	c.DescribeContainerInstancesWithContext(ctx, input)
-
-	m.AssertExpectations(t)
-}
-
-func TestClientDescribeContainerInstancesRequest(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
-	input := new(ecs.DescribeContainerInstancesInput)
-	request := new(request.Request)
-	output := new(ecs.DescribeContainerInstancesOutput)
-	m.On("DescribeContainerInstancesRequest", input).Once().Return(request, output)
-
-	c := Client{ecs: m}
-	c.DescribeContainerInstancesRequest(input)
-
-	m.AssertExpectations(t)
-}
-
-func TestClientDescribeServices(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
-	input := new(ecs.DescribeServicesInput)
-	output := new(ecs.DescribeServicesOutput)
-	m.On("DescribeServices", input).Once().Return(output, nil)
-
-	c := Client{ecs: m}
-	c.DescribeServices(input)
-
-	m.AssertExpectations(t)
-}
-
-func TestClientDescribeServicesWithContext(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
-	ctx := context.TODO()
-	input := new(ecs.DescribeServicesInput)
-	output := new(ecs.DescribeServicesOutput)
-	m.On("DescribeServicesWithContext", ctx, input).Once().Return(output, nil)
-
-	c := Client{ecs: m}
-	c.DescribeServicesWithContext(ctx, input)
-
-	m.AssertExpectations(t)
-}
-
-func TestClientDescribeServicesRequest(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
-	input := new(ecs.DescribeServicesInput)
-	request := new(request.Request)
-	output := new(ecs.DescribeServicesOutput)
-	m.On("DescribeServicesRequest", input).Once().Return(request, output)
-
-	c := Client{ecs: m}
-	c.DescribeServicesRequest(input)
-
-	m.AssertExpectations(t)
-}
-
-func TestClientDescribeTaskDefinition(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
-	input := new(ecs.DescribeTaskDefinitionInput)
-	output := new(ecs.DescribeTaskDefinitionOutput)
-	m.On("DescribeTaskDefinition", input).Once().Return(output, nil)
-
-	c := Client{ecs: m}
-	c.DescribeTaskDefinition(input)
-
-	m.AssertExpectations(t)
-}
-
-func TestClientDescribeTaskDefinitionWithContext(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
-	ctx := context.TODO()
-	input := new(ecs.DescribeTaskDefinitionInput)
-	output := new(ecs.DescribeTaskDefinitionOutput)
-	m.On("DescribeTaskDefinitionWithContext", ctx, input).Once().Return(output, nil)
-
-	c := Client{ecs: m}
-	c.DescribeTaskDefinitionWithContext(ctx, input)
-
-	m.AssertExpectations(t)
-}
-
-func TestClientDescribeTaskDefinitionRequest(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
-	input := new(ecs.DescribeTaskDefinitionInput)
-	request := new(request.Request)
-	output := new(ecs.DescribeTaskDefinitionOutput)
-	m.On("DescribeTaskDefinitionRequest", input).Once().Return(request, output)
-
-	c := Client{ecs: m}
-	c.DescribeTaskDefinitionRequest(input)
-
-	m.AssertExpectations(t)
-}
-
-func TestClientDescribeTasks(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
-	input := new(ecs.DescribeTasksInput)
-	output := new(ecs.DescribeTasksOutput)
-	m.On("DescribeTasks", input).Once().Return(output, nil)
-
-	c := Client{ecs: m}
-	c.DescribeTasks(input)
-
-	m.AssertExpectations(t)
-}
-
-func TestClientDescribeTasksWithContext(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
-	ctx := context.TODO()
-	input := new(ecs.DescribeTasksInput)
-	output := new(ecs.DescribeTasksOutput)
-	m.On("DescribeTasksWithContext", ctx, input).Once().Return(output, nil)
-
-	c := Client{ecs: m}
-	c.DescribeTasksWithContext(ctx, input)
-
-	m.AssertExpectations(t)
-}
-
-func TestClientDescribeTasksRequest(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
-	input := new(ecs.DescribeTasksInput)
-	request := new(request.Request)
-	output := new(ecs.DescribeTasksOutput)
-	m.On("DescribeTasksRequest", input).Once().Return(request, output)
-
-	c := Client{ecs: m}
-	c.DescribeTasksRequest(input)
-
-	m.AssertExpectations(t)
-}
-
-func TestClientDiscoverPollEndpoint(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
-	input := new(ecs.DiscoverPollEndpointInput)
-	output := new(ecs.DiscoverPollEndpointOutput)
-	m.On("DiscoverPollEndpoint", input).Once().Return(output, nil)
-
-	c := Client{ecs: m}
-	c.DiscoverPollEndpoint(input)
-
-	m.AssertExpectations(t)
-}
-
-func TestClientDiscoverPollEndpointWithContext(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
-	ctx := context.TODO()
-	input := new(ecs.DiscoverPollEndpointInput)
-	output := new(ecs.DiscoverPollEndpointOutput)
-	m.On("DiscoverPollEndpointWithContext", ctx, input).Once().Return(output, nil)
-
-	c := Client{ecs: m}
-	c.DiscoverPollEndpointWithContext(ctx, input)
-
-	m.AssertExpectations(t)
-}
-
-func TestClientDiscoverPollEndpointRequest(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
-	input := new(ecs.DiscoverPollEndpointInput)
-	request := new(request.Request)
-	output := new(ecs.DiscoverPollEndpointOutput)
-	m.On("DiscoverPollEndpointRequest", input).Once().Return(request, output)
-
-	c := Client{ecs: m}
-	c.DiscoverPollEndpointRequest(input)
-
-	m.AssertExpectations(t)
-}
-
-func TestClientListAttributes(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
-	input := new(ecs.ListAttributesInput)
-	output := new(ecs.ListAttributesOutput)
-	m.On("ListAttributes", input).Once().Return(output, nil)
-
-	c := Client{ecs: m}
-	c.ListAttributes(input)
-
-	m.AssertExpectations(t)
-}
-
-func TestClientListAttributesWithContext(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
-	ctx := context.TODO()
-	input := new(ecs.ListAttributesInput)
-	output := new(ecs.ListAttributesOutput)
-	m.On("ListAttributesWithContext", ctx, input).Once().Return(output, nil)
-
-	c := Client{ecs: m}
-	c.ListAttributesWithContext(ctx, input)
-
-	m.AssertExpectations(t)
-}
-
-func TestClientListAttributesRequest(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
-	input := new(ecs.ListAttributesInput)
-	request := new(request.Request)
-	output := new(ecs.ListAttributesOutput)
-	m.On("ListAttributesRequest", input).Once().Return(request, output)
-
-	c := Client{ecs: m}
-	c.ListAttributesRequest(input)
-
-	m.AssertExpectations(t)
-}
-
-func TestClientListClusters(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
-	input := new(ecs.ListClustersInput)
-	output := new(ecs.ListClustersOutput)
-	m.On("ListClusters", input).Once().Return(output, nil)
-
-	c := Client{ecs: m}
-	c.ListClusters(input)
-
-	m.AssertExpectations(t)
-}
-
-func TestClientListClustersWithContext(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
-	ctx := context.TODO()
-	input := new(ecs.ListClustersInput)
-	output := new(ecs.ListClustersOutput)
-	m.On("ListClustersWithContext", ctx, input).Once().Return(output, nil)
-
-	c := Client{ecs: m}
-	c.ListClustersWithContext(ctx, input)
-
-	m.AssertExpectations(t)
-}
-
-func TestClientListClustersRequest(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
-	input := new(ecs.ListClustersInput)
-	request := new(request.Request)
-	output := new(ecs.ListClustersOutput)
-	m.On("ListClustersRequest", input).Once().Return(request, output)
-
-	c := Client{ecs: m}
-	c.ListClustersRequest(input)
-
-	m.AssertExpectations(t)
-}
-
-func TestClientListClustersPages(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
-	input := new(ecs.ListClustersInput)
+func (suite *TestClientSuite) TestListClustersPages() {
+	input := ecs.ListClustersInput{}
 	fn := func(output *ecs.ListClustersOutput, lastPage bool) bool {
 		return lastPage
 	}
-	m.On("ListClustersPages", input, mock.Anything).Once().Return(nil)
+	suite.ecs.On("ListClustersPages", &input, mock.Anything).Once().Return(nil)
 
-	c := Client{ecs: m}
-	c.ListClustersPages(input, fn)
-
-	m.AssertExpectations(t)
+	suite.NoError(suite.client.ListClustersPages(&input, fn))
 }
 
-func TestClientListClustersPagesWithContext(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
+func (suite *TestClientSuite) TestListClustersPagesWithContext() {
 	ctx := context.TODO()
-	input := new(ecs.ListClustersInput)
+	input := ecs.ListClustersInput{}
 	fn := func(output *ecs.ListClustersOutput, lastPage bool) bool {
 		return lastPage
 	}
-	m.On("ListClustersPagesWithContext", ctx, input, mock.Anything).Once().Return(nil)
+	suite.ecs.On("ListClustersPagesWithContext", ctx, &input, mock.Anything).Once().Return(nil)
 
-	c := Client{ecs: m}
-	c.ListClustersPagesWithContext(ctx, input, fn)
-
-	m.AssertExpectations(t)
+	suite.NoError(suite.client.ListClustersPagesWithContext(ctx, &input, fn))
 }
 
-func TestClientListContainerInstances(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestListContainerInstances() {
+	input := ecs.ListContainerInstancesInput{}
+	output := ecs.ListContainerInstancesOutput{}
+	suite.ecs.On("ListContainerInstances", &input).Once().Return(&output, nil)
 
-	input := new(ecs.ListContainerInstancesInput)
-	output := new(ecs.ListContainerInstancesOutput)
-	m.On("ListContainerInstances", input).Once().Return(output, nil)
-
-	c := Client{ecs: m}
-	c.ListContainerInstances(input)
-
-	m.AssertExpectations(t)
+	out, err := suite.client.ListContainerInstances(&input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientListContainerInstancesWithContext(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
+func (suite *TestClientSuite) TestListContainerInstancesWithContext() {
 	ctx := context.TODO()
-	input := new(ecs.ListContainerInstancesInput)
-	output := new(ecs.ListContainerInstancesOutput)
-	m.On("ListContainerInstancesWithContext", ctx, input).Once().Return(output, nil)
+	input := ecs.ListContainerInstancesInput{}
+	output := ecs.ListContainerInstancesOutput{}
+	suite.ecs.On("ListContainerInstancesWithContext", ctx, &input).Once().Return(&output, nil)
 
-	c := Client{ecs: m}
-	c.ListContainerInstancesWithContext(ctx, input)
-
-	m.AssertExpectations(t)
+	out, err := suite.client.ListContainerInstancesWithContext(ctx, &input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientListContainerInstancesRequest(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestListContainerInstancesRequest() {
 
-	input := new(ecs.ListContainerInstancesInput)
-	request := new(request.Request)
-	output := new(ecs.ListContainerInstancesOutput)
-	m.On("ListContainerInstancesRequest", input).Once().Return(request, output)
+	input := ecs.ListContainerInstancesInput{}
+	request := request.Request{}
+	output := ecs.ListContainerInstancesOutput{}
+	suite.ecs.On("ListContainerInstancesRequest", &input).Once().Return(&request, &output)
 
-	c := Client{ecs: m}
-	c.ListContainerInstancesRequest(input)
-
-	m.AssertExpectations(t)
+	req, out := suite.client.ListContainerInstancesRequest(&input)
+	suite.EqualValues(&request, req)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientListContainerInstancesPages(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
-	input := new(ecs.ListContainerInstancesInput)
+func (suite *TestClientSuite) TestListContainerInstancesPages() {
+	input := ecs.ListContainerInstancesInput{}
 	fn := func(output *ecs.ListContainerInstancesOutput, lastPage bool) bool {
 		return lastPage
 	}
-	m.On("ListContainerInstancesPages", input, mock.Anything).Once().Return(nil)
+	suite.ecs.On("ListContainerInstancesPages", &input, mock.Anything).Once().Return(nil)
 
-	c := Client{ecs: m}
-	c.ListContainerInstancesPages(input, fn)
-
-	m.AssertExpectations(t)
+	suite.NoError(suite.client.ListContainerInstancesPages(&input, fn))
 }
 
-func TestClientListContainerInstancesPagesWithContext(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
+func (suite *TestClientSuite) TestListContainerInstancesPagesWithContext() {
 	ctx := context.TODO()
-	input := new(ecs.ListContainerInstancesInput)
+	input := ecs.ListContainerInstancesInput{}
 	fn := func(output *ecs.ListContainerInstancesOutput, lastPage bool) bool {
 		return lastPage
 	}
-	m.On("ListContainerInstancesPagesWithContext", ctx, input, mock.Anything).Once().Return(nil)
+	suite.ecs.On("ListContainerInstancesPagesWithContext", ctx, &input, mock.Anything).Once().Return(nil)
 
-	c := Client{ecs: m}
-	c.ListContainerInstancesPagesWithContext(ctx, input, fn)
-
-	m.AssertExpectations(t)
+	suite.NoError(suite.client.ListContainerInstancesPagesWithContext(ctx, &input, fn))
 }
 
-func TestClientListServices(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestListServices() {
+	input := ecs.ListServicesInput{}
+	output := ecs.ListServicesOutput{}
+	suite.ecs.On("ListServices", &input).Once().Return(&output, nil)
 
-	input := new(ecs.ListServicesInput)
-	output := new(ecs.ListServicesOutput)
-	m.On("ListServices", input).Once().Return(output, nil)
-
-	c := Client{ecs: m}
-	c.ListServices(input)
-
-	m.AssertExpectations(t)
+	out, err := suite.client.ListServices(&input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientListServicesWithContext(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
+func (suite *TestClientSuite) TestListServicesWithContext() {
 	ctx := context.TODO()
-	input := new(ecs.ListServicesInput)
-	output := new(ecs.ListServicesOutput)
-	m.On("ListServicesWithContext", ctx, input).Once().Return(output, nil)
+	input := ecs.ListServicesInput{}
+	output := ecs.ListServicesOutput{}
+	suite.ecs.On("ListServicesWithContext", ctx, &input).Once().Return(&output, nil)
 
-	c := Client{ecs: m}
-	c.ListServicesWithContext(ctx, input)
-
-	m.AssertExpectations(t)
+	out, err := suite.client.ListServicesWithContext(ctx, &input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientListServicesRequest(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestListServicesRequest() {
+	input := ecs.ListServicesInput{}
+	request := request.Request{}
+	output := ecs.ListServicesOutput{}
+	suite.ecs.On("ListServicesRequest", &input).Once().Return(&request, &output)
 
-	input := new(ecs.ListServicesInput)
-	request := new(request.Request)
-	output := new(ecs.ListServicesOutput)
-	m.On("ListServicesRequest", input).Once().Return(request, output)
-
-	c := Client{ecs: m}
-	c.ListServicesRequest(input)
-
-	m.AssertExpectations(t)
+	req, out := suite.client.ListServicesRequest(&input)
+	suite.EqualValues(&request, req)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientListServicesPages(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
-	input := new(ecs.ListServicesInput)
+func (suite *TestClientSuite) TestListServicesPages() {
+	input := ecs.ListServicesInput{}
 	fn := func(output *ecs.ListServicesOutput, lastPage bool) bool {
 		return lastPage
 	}
-	m.On("ListServicesPages", input, mock.Anything).Once().Return(nil)
+	suite.ecs.On("ListServicesPages", &input, mock.Anything).Once().Return(nil)
 
-	c := Client{ecs: m}
-	c.ListServicesPages(input, fn)
-
-	m.AssertExpectations(t)
+	suite.NoError(suite.client.ListServicesPages(&input, fn))
 }
 
-func TestClientListServicesPagesWithContext(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
+func (suite *TestClientSuite) TestListServicesPagesWithContext() {
 	ctx := context.TODO()
-	input := new(ecs.ListServicesInput)
+	input := ecs.ListServicesInput{}
 	fn := func(output *ecs.ListServicesOutput, lastPage bool) bool {
 		return lastPage
 	}
-	m.On("ListServicesPagesWithContext", ctx, input, mock.Anything).Once().Return(nil)
+	suite.ecs.On("ListServicesPagesWithContext", ctx, &input, mock.Anything).Once().Return(nil)
 
-	c := Client{ecs: m}
-	c.ListServicesPagesWithContext(ctx, input, fn)
-
-	m.AssertExpectations(t)
+	suite.NoError(suite.client.ListServicesPagesWithContext(ctx, &input, fn))
 }
 
-func TestClientListTaskDefinitionFamilies(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestListTaskDefinitionFamilies() {
+	input := ecs.ListTaskDefinitionFamiliesInput{}
+	output := ecs.ListTaskDefinitionFamiliesOutput{}
+	suite.ecs.On("ListTaskDefinitionFamilies", &input).Once().Return(&output, nil)
 
-	input := new(ecs.ListTaskDefinitionFamiliesInput)
-	output := new(ecs.ListTaskDefinitionFamiliesOutput)
-	m.On("ListTaskDefinitionFamilies", input).Once().Return(output, nil)
-
-	c := Client{ecs: m}
-	c.ListTaskDefinitionFamilies(input)
-
-	m.AssertExpectations(t)
+	out, err := suite.client.ListTaskDefinitionFamilies(&input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientListTaskDefinitionFamiliesWithContext(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
+func (suite *TestClientSuite) TestListTaskDefinitionFamiliesWithContext() {
 	ctx := context.TODO()
-	input := new(ecs.ListTaskDefinitionFamiliesInput)
-	output := new(ecs.ListTaskDefinitionFamiliesOutput)
-	m.On("ListTaskDefinitionFamiliesWithContext", ctx, input).Once().Return(output, nil)
+	input := ecs.ListTaskDefinitionFamiliesInput{}
+	output := ecs.ListTaskDefinitionFamiliesOutput{}
+	suite.ecs.On("ListTaskDefinitionFamiliesWithContext", ctx, &input).Once().Return(&output, nil)
 
-	c := Client{ecs: m}
-	c.ListTaskDefinitionFamiliesWithContext(ctx, input)
-
-	m.AssertExpectations(t)
+	out, err := suite.client.ListTaskDefinitionFamiliesWithContext(ctx, &input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientListTaskDefinitionFamiliesRequest(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestListTaskDefinitionFamiliesRequest() {
+	input := ecs.ListTaskDefinitionFamiliesInput{}
+	request := request.Request{}
+	output := ecs.ListTaskDefinitionFamiliesOutput{}
+	suite.ecs.On("ListTaskDefinitionFamiliesRequest", &input).Once().Return(&request, &output)
 
-	input := new(ecs.ListTaskDefinitionFamiliesInput)
-	request := new(request.Request)
-	output := new(ecs.ListTaskDefinitionFamiliesOutput)
-	m.On("ListTaskDefinitionFamiliesRequest", input).Once().Return(request, output)
-
-	c := Client{ecs: m}
-	c.ListTaskDefinitionFamiliesRequest(input)
-
-	m.AssertExpectations(t)
+	req, out := suite.client.ListTaskDefinitionFamiliesRequest(&input)
+	suite.EqualValues(&request, req)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientListTaskDefinitionFamiliesPages(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
-	input := new(ecs.ListTaskDefinitionFamiliesInput)
+func (suite *TestClientSuite) TestListTaskDefinitionFamiliesPages() {
+	input := ecs.ListTaskDefinitionFamiliesInput{}
 	fn := func(output *ecs.ListTaskDefinitionFamiliesOutput, lastPage bool) bool {
 		return lastPage
 	}
-	m.On("ListTaskDefinitionFamiliesPages", input, mock.Anything).Once().Return(nil)
+	suite.ecs.On("ListTaskDefinitionFamiliesPages", &input, mock.Anything).Once().Return(nil)
 
-	c := Client{ecs: m}
-	c.ListTaskDefinitionFamiliesPages(input, fn)
-
-	m.AssertExpectations(t)
+	suite.NoError(suite.client.ListTaskDefinitionFamiliesPages(&input, fn))
 }
 
-func TestClientListTaskDefinitionFamiliesPagesWithContext(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
+func (suite *TestClientSuite) TestListTaskDefinitionFamiliesPagesWithContext() {
 	ctx := context.TODO()
-	input := new(ecs.ListTaskDefinitionFamiliesInput)
+	input := ecs.ListTaskDefinitionFamiliesInput{}
 	fn := func(output *ecs.ListTaskDefinitionFamiliesOutput, lastPage bool) bool {
 		return lastPage
 	}
-	m.On("ListTaskDefinitionFamiliesPagesWithContext", ctx, input, mock.Anything).Once().Return(nil)
+	suite.ecs.On("ListTaskDefinitionFamiliesPagesWithContext", ctx, &input, mock.Anything).Once().Return(nil)
 
-	c := Client{ecs: m}
-	c.ListTaskDefinitionFamiliesPagesWithContext(ctx, input, fn)
-
-	m.AssertExpectations(t)
+	suite.NoError(suite.client.ListTaskDefinitionFamiliesPagesWithContext(ctx, &input, fn))
 }
 
-func TestClientListTaskDefinitions(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestListTaskDefinitions() {
+	input := ecs.ListTaskDefinitionsInput{}
+	output := ecs.ListTaskDefinitionsOutput{}
+	suite.ecs.On("ListTaskDefinitions", &input).Once().Return(&output, nil)
 
-	input := new(ecs.ListTaskDefinitionsInput)
-	output := new(ecs.ListTaskDefinitionsOutput)
-	m.On("ListTaskDefinitions", input).Once().Return(output, nil)
-
-	c := Client{ecs: m}
-	c.ListTaskDefinitions(input)
-
-	m.AssertExpectations(t)
+	out, err := suite.client.ListTaskDefinitions(&input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientListTaskDefinitionsWithContext(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
+func (suite *TestClientSuite) TestListTaskDefinitionsWithContext() {
 	ctx := context.TODO()
-	input := new(ecs.ListTaskDefinitionsInput)
-	output := new(ecs.ListTaskDefinitionsOutput)
-	m.On("ListTaskDefinitionsWithContext", ctx, input).Once().Return(output, nil)
+	input := ecs.ListTaskDefinitionsInput{}
+	output := ecs.ListTaskDefinitionsOutput{}
+	suite.ecs.On("ListTaskDefinitionsWithContext", ctx, &input).Once().Return(&output, nil)
 
-	c := Client{ecs: m}
-	c.ListTaskDefinitionsWithContext(ctx, input)
-
-	m.AssertExpectations(t)
+	out, err := suite.client.ListTaskDefinitionsWithContext(ctx, &input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientListTaskDefinitionsRequest(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestListTaskDefinitionsRequest() {
+	input := ecs.ListTaskDefinitionsInput{}
+	request := request.Request{}
+	output := ecs.ListTaskDefinitionsOutput{}
+	suite.ecs.On("ListTaskDefinitionsRequest", &input).Once().Return(&request, &output)
 
-	input := new(ecs.ListTaskDefinitionsInput)
-	request := new(request.Request)
-	output := new(ecs.ListTaskDefinitionsOutput)
-	m.On("ListTaskDefinitionsRequest", input).Once().Return(request, output)
-
-	c := Client{ecs: m}
-	c.ListTaskDefinitionsRequest(input)
-
-	m.AssertExpectations(t)
+	req, out := suite.client.ListTaskDefinitionsRequest(&input)
+	suite.EqualValues(&request, req)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientListTaskDefinitionsPages(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
-	input := new(ecs.ListTaskDefinitionsInput)
+func (suite *TestClientSuite) TestListTaskDefinitionsPages() {
+	input := ecs.ListTaskDefinitionsInput{}
 	fn := func(output *ecs.ListTaskDefinitionsOutput, lastPage bool) bool {
 		return lastPage
 	}
-	m.On("ListTaskDefinitionsPages", input, mock.Anything).Once().Return(nil)
+	suite.ecs.On("ListTaskDefinitionsPages", &input, mock.Anything).Once().Return(nil)
 
-	c := Client{ecs: m}
-	c.ListTaskDefinitionsPages(input, fn)
-
-	m.AssertExpectations(t)
+	suite.NoError(suite.client.ListTaskDefinitionsPages(&input, fn))
 }
 
-func TestClientListTaskDefinitionsPagesWithContext(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
+func (suite *TestClientSuite) TestListTaskDefinitionsPagesWithContext() {
 	ctx := context.TODO()
-	input := new(ecs.ListTaskDefinitionsInput)
+	input := ecs.ListTaskDefinitionsInput{}
 	fn := func(output *ecs.ListTaskDefinitionsOutput, lastPage bool) bool {
 		return lastPage
 	}
-	m.On("ListTaskDefinitionsPagesWithContext", ctx, input, mock.Anything).Once().Return(nil)
+	suite.ecs.On("ListTaskDefinitionsPagesWithContext", ctx, &input, mock.Anything).Once().Return(nil)
 
-	c := Client{ecs: m}
-	c.ListTaskDefinitionsPagesWithContext(ctx, input, fn)
-
-	m.AssertExpectations(t)
+	suite.NoError(suite.client.ListTaskDefinitionsPagesWithContext(ctx, &input, fn))
 }
 
-func TestClientListTasks(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestListTasks() {
+	input := ecs.ListTasksInput{}
+	output := ecs.ListTasksOutput{}
+	suite.ecs.On("ListTasks", &input).Once().Return(&output, nil)
 
-	input := new(ecs.ListTasksInput)
-	output := new(ecs.ListTasksOutput)
-	m.On("ListTasks", input).Once().Return(output, nil)
-
-	c := Client{ecs: m}
-	c.ListTasks(input)
-
-	m.AssertExpectations(t)
+	out, err := suite.client.ListTasks(&input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientListTasksWithContext(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
+func (suite *TestClientSuite) TestListTasksWithContext() {
 	ctx := context.TODO()
-	input := new(ecs.ListTasksInput)
-	output := new(ecs.ListTasksOutput)
-	m.On("ListTasksWithContext", ctx, input).Once().Return(output, nil)
+	input := ecs.ListTasksInput{}
+	output := ecs.ListTasksOutput{}
+	suite.ecs.On("ListTasksWithContext", ctx, &input).Once().Return(&output, nil)
 
-	c := Client{ecs: m}
-	c.ListTasksWithContext(ctx, input)
-
-	m.AssertExpectations(t)
+	out, err := suite.client.ListTasksWithContext(ctx, &input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientListTasksRequest(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestListTasksRequest() {
+	input := ecs.ListTasksInput{}
+	request := request.Request{}
+	output := ecs.ListTasksOutput{}
+	suite.ecs.On("ListTasksRequest", &input).Once().Return(&request, &output)
 
-	input := new(ecs.ListTasksInput)
-	request := new(request.Request)
-	output := new(ecs.ListTasksOutput)
-	m.On("ListTasksRequest", input).Once().Return(request, output)
-
-	c := Client{ecs: m}
-	c.ListTasksRequest(input)
-
-	m.AssertExpectations(t)
+	req, out := suite.client.ListTasksRequest(&input)
+	suite.EqualValues(&request, req)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientListTasksPages(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
-	input := new(ecs.ListTasksInput)
+func (suite *TestClientSuite) TestListTasksPages() {
+	input := ecs.ListTasksInput{}
 	fn := func(output *ecs.ListTasksOutput, lastPage bool) bool {
 		return lastPage
 	}
-	m.On("ListTasksPages", input, mock.Anything).Once().Return(nil)
+	suite.ecs.On("ListTasksPages", &input, mock.Anything).Once().Return(nil)
 
-	c := Client{ecs: m}
-	c.ListTasksPages(input, fn)
-
-	m.AssertExpectations(t)
+	suite.NoError(suite.client.ListTasksPages(&input, fn))
 }
 
-func TestClientListTasksPagesWithContext(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
+func (suite *TestClientSuite) TestListTasksPagesWithContext() {
 	ctx := context.TODO()
-	input := new(ecs.ListTasksInput)
+	input := ecs.ListTasksInput{}
 	fn := func(output *ecs.ListTasksOutput, lastPage bool) bool {
 		return lastPage
 	}
-	m.On("ListTasksPagesWithContext", ctx, input, mock.Anything).Once().Return(nil)
+	suite.ecs.On("ListTasksPagesWithContext", ctx, &input, mock.Anything).Once().Return(nil)
 
-	c := Client{ecs: m}
-	c.ListTasksPagesWithContext(ctx, input, fn)
-
-	m.AssertExpectations(t)
+	suite.NoError(suite.client.ListTasksPagesWithContext(ctx, &input, fn))
 }
 
-func TestClientPutAttributes(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestPutAttributes() {
+	input := ecs.PutAttributesInput{}
+	output := ecs.PutAttributesOutput{}
+	suite.ecs.On("PutAttributes", &input).Once().Return(&output, nil)
 
-	input := new(ecs.PutAttributesInput)
-	output := new(ecs.PutAttributesOutput)
-	m.On("PutAttributes", input).Once().Return(output, nil)
-
-	c := Client{ecs: m}
-	c.PutAttributes(input)
-
-	m.AssertExpectations(t)
+	out, err := suite.client.PutAttributes(&input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientPutAttributesWithContext(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
+func (suite *TestClientSuite) TestPutAttributesWithContext() {
 	ctx := context.TODO()
-	input := new(ecs.PutAttributesInput)
-	output := new(ecs.PutAttributesOutput)
-	m.On("PutAttributesWithContext", ctx, input).Once().Return(output, nil)
+	input := ecs.PutAttributesInput{}
+	output := ecs.PutAttributesOutput{}
+	suite.ecs.On("PutAttributesWithContext", ctx, &input).Once().Return(&output, nil)
 
-	c := Client{ecs: m}
-	c.PutAttributesWithContext(ctx, input)
-
-	m.AssertExpectations(t)
+	out, err := suite.client.PutAttributesWithContext(ctx, &input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientPutAttributesRequest(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestPutAttributesRequest() {
+	input := ecs.PutAttributesInput{}
+	request := request.Request{}
+	output := ecs.PutAttributesOutput{}
+	suite.ecs.On("PutAttributesRequest", &input).Once().Return(&request, &output)
 
-	input := new(ecs.PutAttributesInput)
-	request := new(request.Request)
-	output := new(ecs.PutAttributesOutput)
-	m.On("PutAttributesRequest", input).Once().Return(request, output)
-
-	c := Client{ecs: m}
-	c.PutAttributesRequest(input)
-
-	m.AssertExpectations(t)
+	req, out := suite.client.PutAttributesRequest(&input)
+	suite.EqualValues(&request, req)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientRegisterContainerInstance(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestRegisterContainerInstance() {
+	input := ecs.RegisterContainerInstanceInput{}
+	output := ecs.RegisterContainerInstanceOutput{}
+	suite.ecs.On("RegisterContainerInstance", &input).Once().Return(&output, nil)
 
-	input := new(ecs.RegisterContainerInstanceInput)
-	output := new(ecs.RegisterContainerInstanceOutput)
-	m.On("RegisterContainerInstance", input).Once().Return(output, nil)
-
-	c := Client{ecs: m}
-	c.RegisterContainerInstance(input)
-
-	m.AssertExpectations(t)
+	out, err := suite.client.RegisterContainerInstance(&input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientRegisterContainerInstanceWithContext(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
+func (suite *TestClientSuite) TestRegisterContainerInstanceWithContext() {
 	ctx := context.TODO()
-	input := new(ecs.RegisterContainerInstanceInput)
-	output := new(ecs.RegisterContainerInstanceOutput)
-	m.On("RegisterContainerInstanceWithContext", ctx, input).Once().Return(output, nil)
+	input := ecs.RegisterContainerInstanceInput{}
+	output := ecs.RegisterContainerInstanceOutput{}
+	suite.ecs.On("RegisterContainerInstanceWithContext", ctx, &input).Once().Return(&output, nil)
 
-	c := Client{ecs: m}
-	c.RegisterContainerInstanceWithContext(ctx, input)
-
-	m.AssertExpectations(t)
+	out, err := suite.client.RegisterContainerInstanceWithContext(ctx, &input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientRegisterContainerInstanceRequest(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestRegisterContainerInstanceRequest() {
+	input := ecs.RegisterContainerInstanceInput{}
+	request := request.Request{}
+	output := ecs.RegisterContainerInstanceOutput{}
+	suite.ecs.On("RegisterContainerInstanceRequest", &input).Once().Return(&request, &output)
 
-	input := new(ecs.RegisterContainerInstanceInput)
-	request := new(request.Request)
-	output := new(ecs.RegisterContainerInstanceOutput)
-	m.On("RegisterContainerInstanceRequest", input).Once().Return(request, output)
-
-	c := Client{ecs: m}
-	c.RegisterContainerInstanceRequest(input)
-
-	m.AssertExpectations(t)
+	req, out := suite.client.RegisterContainerInstanceRequest(&input)
+	suite.EqualValues(&request, req)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientRegisterTaskDefinition(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestRegisterTaskDefinition() {
+	input := ecs.RegisterTaskDefinitionInput{}
+	output := ecs.RegisterTaskDefinitionOutput{}
+	suite.ecs.On("RegisterTaskDefinition", &input).Once().Return(&output, nil)
 
-	input := new(ecs.RegisterTaskDefinitionInput)
-	output := new(ecs.RegisterTaskDefinitionOutput)
-	m.On("RegisterTaskDefinition", input).Once().Return(output, nil)
-
-	c := Client{ecs: m}
-	c.RegisterTaskDefinition(input)
-
-	m.AssertExpectations(t)
+	out, err := suite.client.RegisterTaskDefinition(&input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientRegisterTaskDefinitionWithContext(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
+func (suite *TestClientSuite) TestRegisterTaskDefinitionWithContext() {
 	ctx := context.TODO()
-	input := new(ecs.RegisterTaskDefinitionInput)
-	output := new(ecs.RegisterTaskDefinitionOutput)
-	m.On("RegisterTaskDefinitionWithContext", ctx, input).Once().Return(output, nil)
+	input := ecs.RegisterTaskDefinitionInput{}
+	output := ecs.RegisterTaskDefinitionOutput{}
+	suite.ecs.On("RegisterTaskDefinitionWithContext", ctx, &input).Once().Return(&output, nil)
 
-	c := Client{ecs: m}
-	c.RegisterTaskDefinitionWithContext(ctx, input)
-
-	m.AssertExpectations(t)
+	out, err := suite.client.RegisterTaskDefinitionWithContext(ctx, &input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientRegisterTaskDefinitionRequest(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestRegisterTaskDefinitionRequest() {
+	input := ecs.RegisterTaskDefinitionInput{}
+	request := request.Request{}
+	output := ecs.RegisterTaskDefinitionOutput{}
+	suite.ecs.On("RegisterTaskDefinitionRequest", &input).Once().Return(&request, &output)
 
-	input := new(ecs.RegisterTaskDefinitionInput)
-	request := new(request.Request)
-	output := new(ecs.RegisterTaskDefinitionOutput)
-	m.On("RegisterTaskDefinitionRequest", input).Once().Return(request, output)
-
-	c := Client{ecs: m}
-	c.RegisterTaskDefinitionRequest(input)
-
-	m.AssertExpectations(t)
+	req, out := suite.client.RegisterTaskDefinitionRequest(&input)
+	suite.EqualValues(&request, req)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientRunTask(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestRunTask() {
+	input := ecs.RunTaskInput{}
+	output := ecs.RunTaskOutput{}
+	suite.ecs.On("RunTask", &input).Once().Return(&output, nil)
 
-	input := new(ecs.RunTaskInput)
-	output := new(ecs.RunTaskOutput)
-	m.On("RunTask", input).Once().Return(output, nil)
-
-	c := Client{ecs: m}
-	c.RunTask(input)
-
-	m.AssertExpectations(t)
+	out, err := suite.client.RunTask(&input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientRunTaskWithContext(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
+func (suite *TestClientSuite) TestRunTaskWithContext() {
 	ctx := context.TODO()
-	input := new(ecs.RunTaskInput)
-	output := new(ecs.RunTaskOutput)
-	m.On("RunTaskWithContext", ctx, input).Once().Return(output, nil)
+	input := ecs.RunTaskInput{}
+	output := ecs.RunTaskOutput{}
+	suite.ecs.On("RunTaskWithContext", ctx, &input).Once().Return(&output, nil)
 
-	c := Client{ecs: m}
-	c.RunTaskWithContext(ctx, input)
-
-	m.AssertExpectations(t)
+	out, err := suite.client.RunTaskWithContext(ctx, &input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientRunTaskRequest(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestRunTaskRequest() {
+	input := ecs.RunTaskInput{}
+	request := request.Request{}
+	output := ecs.RunTaskOutput{}
+	suite.ecs.On("RunTaskRequest", &input).Once().Return(&request, &output)
 
-	input := new(ecs.RunTaskInput)
-	request := new(request.Request)
-	output := new(ecs.RunTaskOutput)
-	m.On("RunTaskRequest", input).Once().Return(request, output)
-
-	c := Client{ecs: m}
-	c.RunTaskRequest(input)
-
-	m.AssertExpectations(t)
+	req, out := suite.client.RunTaskRequest(&input)
+	suite.EqualValues(&request, req)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientStartTask(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestStartTask() {
+	input := ecs.StartTaskInput{}
+	output := ecs.StartTaskOutput{}
+	suite.ecs.On("StartTask", &input).Once().Return(&output, nil)
 
-	input := new(ecs.StartTaskInput)
-	output := new(ecs.StartTaskOutput)
-	m.On("StartTask", input).Once().Return(output, nil)
-
-	c := Client{ecs: m}
-	c.StartTask(input)
-
-	m.AssertExpectations(t)
+	out, err := suite.client.StartTask(&input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientStartTaskWithContext(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
+func (suite *TestClientSuite) TestStartTaskWithContext() {
 	ctx := context.TODO()
-	input := new(ecs.StartTaskInput)
-	output := new(ecs.StartTaskOutput)
-	m.On("StartTaskWithContext", ctx, input).Once().Return(output, nil)
+	input := ecs.StartTaskInput{}
+	output := ecs.StartTaskOutput{}
+	suite.ecs.On("StartTaskWithContext", ctx, &input).Once().Return(&output, nil)
 
-	c := Client{ecs: m}
-	c.StartTaskWithContext(ctx, input)
-
-	m.AssertExpectations(t)
+	out, err := suite.client.StartTaskWithContext(ctx, &input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientStartTaskRequest(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestStartTaskRequest() {
 
-	input := new(ecs.StartTaskInput)
-	request := new(request.Request)
-	output := new(ecs.StartTaskOutput)
-	m.On("StartTaskRequest", input).Once().Return(request, output)
+	input := ecs.StartTaskInput{}
+	request := request.Request{}
+	output := ecs.StartTaskOutput{}
+	suite.ecs.On("StartTaskRequest", &input).Once().Return(&request, &output)
 
-	c := Client{ecs: m}
-	c.StartTaskRequest(input)
-
-	m.AssertExpectations(t)
+	req, out := suite.client.StartTaskRequest(&input)
+	suite.EqualValues(&request, req)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientStopTask(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestStopTask() {
+	input := ecs.StopTaskInput{}
+	output := ecs.StopTaskOutput{}
+	suite.ecs.On("StopTask", &input).Once().Return(&output, nil)
 
-	input := new(ecs.StopTaskInput)
-	output := new(ecs.StopTaskOutput)
-	m.On("StopTask", input).Once().Return(output, nil)
-
-	c := Client{ecs: m}
-	c.StopTask(input)
-
-	m.AssertExpectations(t)
+	out, err := suite.client.StopTask(&input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientStopTaskWithContext(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
+func (suite *TestClientSuite) TestStopTaskWithContext() {
 	ctx := context.TODO()
-	input := new(ecs.StopTaskInput)
-	output := new(ecs.StopTaskOutput)
-	m.On("StopTaskWithContext", ctx, input).Once().Return(output, nil)
+	input := ecs.StopTaskInput{}
+	output := ecs.StopTaskOutput{}
+	suite.ecs.On("StopTaskWithContext", ctx, &input).Once().Return(&output, nil)
 
-	c := Client{ecs: m}
-	c.StopTaskWithContext(ctx, input)
-
-	m.AssertExpectations(t)
+	out, err := suite.client.StopTaskWithContext(ctx, &input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientStopTaskRequest(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestStopTaskRequest() {
+	input := ecs.StopTaskInput{}
+	request := request.Request{}
+	output := ecs.StopTaskOutput{}
+	suite.ecs.On("StopTaskRequest", &input).Once().Return(&request, &output)
 
-	input := new(ecs.StopTaskInput)
-	request := new(request.Request)
-	output := new(ecs.StopTaskOutput)
-	m.On("StopTaskRequest", input).Once().Return(request, output)
-
-	c := Client{ecs: m}
-	c.StopTaskRequest(input)
-
-	m.AssertExpectations(t)
+	req, out := suite.client.StopTaskRequest(&input)
+	suite.EqualValues(&request, req)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientSubmitContainerStateChange(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestSubmitContainerStateChange() {
+	input := ecs.SubmitContainerStateChangeInput{}
+	output := ecs.SubmitContainerStateChangeOutput{}
+	suite.ecs.On("SubmitContainerStateChange", &input).Once().Return(&output, nil)
 
-	input := new(ecs.SubmitContainerStateChangeInput)
-	output := new(ecs.SubmitContainerStateChangeOutput)
-	m.On("SubmitContainerStateChange", input).Once().Return(output, nil)
-
-	c := Client{ecs: m}
-	c.SubmitContainerStateChange(input)
-
-	m.AssertExpectations(t)
+	out, err := suite.client.SubmitContainerStateChange(&input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientSubmitContainerStateChangeWithContext(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
+func (suite *TestClientSuite) TestSubmitContainerStateChangeWithContext() {
 	ctx := context.TODO()
-	input := new(ecs.SubmitContainerStateChangeInput)
-	output := new(ecs.SubmitContainerStateChangeOutput)
-	m.On("SubmitContainerStateChangeWithContext", ctx, input).Once().Return(output, nil)
+	input := ecs.SubmitContainerStateChangeInput{}
+	output := ecs.SubmitContainerStateChangeOutput{}
+	suite.ecs.On("SubmitContainerStateChangeWithContext", ctx, &input).Once().Return(&output, nil)
 
-	c := Client{ecs: m}
-	c.SubmitContainerStateChangeWithContext(ctx, input)
-
-	m.AssertExpectations(t)
+	out, err := suite.client.SubmitContainerStateChangeWithContext(ctx, &input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientSubmitContainerStateChangeRequest(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestSubmitContainerStateChangeRequest() {
+	input := ecs.SubmitContainerStateChangeInput{}
+	request := request.Request{}
+	output := ecs.SubmitContainerStateChangeOutput{}
+	suite.ecs.On("SubmitContainerStateChangeRequest", &input).Once().Return(&request, &output)
 
-	input := new(ecs.SubmitContainerStateChangeInput)
-	request := new(request.Request)
-	output := new(ecs.SubmitContainerStateChangeOutput)
-	m.On("SubmitContainerStateChangeRequest", input).Once().Return(request, output)
-
-	c := Client{ecs: m}
-	c.SubmitContainerStateChangeRequest(input)
-
-	m.AssertExpectations(t)
+	req, out := suite.client.SubmitContainerStateChangeRequest(&input)
+	suite.EqualValues(&request, req)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientSubmitTaskStateChange(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestSubmitTaskStateChange() {
+	input := ecs.SubmitTaskStateChangeInput{}
+	output := ecs.SubmitTaskStateChangeOutput{}
+	suite.ecs.On("SubmitTaskStateChange", &input).Once().Return(&output, nil)
 
-	input := new(ecs.SubmitTaskStateChangeInput)
-	output := new(ecs.SubmitTaskStateChangeOutput)
-	m.On("SubmitTaskStateChange", input).Once().Return(output, nil)
-
-	c := Client{ecs: m}
-	c.SubmitTaskStateChange(input)
-
-	m.AssertExpectations(t)
+	out, err := suite.client.SubmitTaskStateChange(&input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientSubmitTaskStateChangeWithContext(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
+func (suite *TestClientSuite) TestSubmitTaskStateChangeWithContext() {
 	ctx := context.TODO()
-	input := new(ecs.SubmitTaskStateChangeInput)
-	output := new(ecs.SubmitTaskStateChangeOutput)
-	m.On("SubmitTaskStateChangeWithContext", ctx, input).Once().Return(output, nil)
+	input := ecs.SubmitTaskStateChangeInput{}
+	output := ecs.SubmitTaskStateChangeOutput{}
+	suite.ecs.On("SubmitTaskStateChangeWithContext", ctx, &input).Once().Return(&output, nil)
 
-	c := Client{ecs: m}
-	c.SubmitTaskStateChangeWithContext(ctx, input)
-
-	m.AssertExpectations(t)
+	out, err := suite.client.SubmitTaskStateChangeWithContext(ctx, &input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientSubmitTaskStateChangeRequest(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestSubmitTaskStateChangeRequest() {
+	input := ecs.SubmitTaskStateChangeInput{}
+	request := request.Request{}
+	output := ecs.SubmitTaskStateChangeOutput{}
+	suite.ecs.On("SubmitTaskStateChangeRequest", &input).Once().Return(&request, &output)
 
-	input := new(ecs.SubmitTaskStateChangeInput)
-	request := new(request.Request)
-	output := new(ecs.SubmitTaskStateChangeOutput)
-	m.On("SubmitTaskStateChangeRequest", input).Once().Return(request, output)
-
-	c := Client{ecs: m}
-	c.SubmitTaskStateChangeRequest(input)
-
-	m.AssertExpectations(t)
+	req, out := suite.client.SubmitTaskStateChangeRequest(&input)
+	suite.EqualValues(&request, req)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientUpdateContainerAgent(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestUpdateContainerAgent() {
+	input := ecs.UpdateContainerAgentInput{}
+	output := ecs.UpdateContainerAgentOutput{}
+	suite.ecs.On("UpdateContainerAgent", &input).Once().Return(&output, nil)
 
-	input := new(ecs.UpdateContainerAgentInput)
-	output := new(ecs.UpdateContainerAgentOutput)
-	m.On("UpdateContainerAgent", input).Once().Return(output, nil)
-
-	c := Client{ecs: m}
-	c.UpdateContainerAgent(input)
-
-	m.AssertExpectations(t)
+	out, err := suite.client.UpdateContainerAgent(&input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientUpdateContainerAgentWithContext(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
+func (suite *TestClientSuite) TestUpdateContainerAgentWithContext() {
 	ctx := context.TODO()
-	input := new(ecs.UpdateContainerAgentInput)
-	output := new(ecs.UpdateContainerAgentOutput)
-	m.On("UpdateContainerAgentWithContext", ctx, input).Once().Return(output, nil)
+	input := ecs.UpdateContainerAgentInput{}
+	output := ecs.UpdateContainerAgentOutput{}
+	suite.ecs.On("UpdateContainerAgentWithContext", ctx, &input).Once().Return(&output, nil)
 
-	c := Client{ecs: m}
-	c.UpdateContainerAgentWithContext(ctx, input)
-
-	m.AssertExpectations(t)
+	out, err := suite.client.UpdateContainerAgentWithContext(ctx, &input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientUpdateContainerAgentRequest(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestUpdateContainerAgentRequest() {
+	input := ecs.UpdateContainerAgentInput{}
+	request := request.Request{}
+	output := ecs.UpdateContainerAgentOutput{}
+	suite.ecs.On("UpdateContainerAgentRequest", &input).Once().Return(&request, &output)
 
-	input := new(ecs.UpdateContainerAgentInput)
-	request := new(request.Request)
-	output := new(ecs.UpdateContainerAgentOutput)
-	m.On("UpdateContainerAgentRequest", input).Once().Return(request, output)
-
-	c := Client{ecs: m}
-	c.UpdateContainerAgentRequest(input)
-
-	m.AssertExpectations(t)
+	req, out := suite.client.UpdateContainerAgentRequest(&input)
+	suite.EqualValues(&request, req)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientUpdateContainerInstancesState(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestUpdateContainerInstancesState() {
+	input := ecs.UpdateContainerInstancesStateInput{}
+	output := ecs.UpdateContainerInstancesStateOutput{}
+	suite.ecs.On("UpdateContainerInstancesState", &input).Once().Return(&output, nil)
 
-	input := new(ecs.UpdateContainerInstancesStateInput)
-	output := new(ecs.UpdateContainerInstancesStateOutput)
-	m.On("UpdateContainerInstancesState", input).Once().Return(output, nil)
-
-	c := Client{ecs: m}
-	c.UpdateContainerInstancesState(input)
-
-	m.AssertExpectations(t)
+	out, err := suite.client.UpdateContainerInstancesState(&input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientUpdateContainerInstancesStateWithContext(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
+func (suite *TestClientSuite) TestUpdateContainerInstancesStateWithContext() {
 	ctx := context.TODO()
-	input := new(ecs.UpdateContainerInstancesStateInput)
-	output := new(ecs.UpdateContainerInstancesStateOutput)
-	m.On("UpdateContainerInstancesStateWithContext", ctx, input).Once().Return(output, nil)
+	input := ecs.UpdateContainerInstancesStateInput{}
+	output := ecs.UpdateContainerInstancesStateOutput{}
+	suite.ecs.On("UpdateContainerInstancesStateWithContext", ctx, &input).Once().Return(&output, nil)
 
-	c := Client{ecs: m}
-	c.UpdateContainerInstancesStateWithContext(ctx, input)
-
-	m.AssertExpectations(t)
+	out, err := suite.client.UpdateContainerInstancesStateWithContext(ctx, &input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientUpdateContainerInstancesStateRequest(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestUpdateContainerInstancesStateRequest() {
+	input := ecs.UpdateContainerInstancesStateInput{}
+	request := request.Request{}
+	output := ecs.UpdateContainerInstancesStateOutput{}
+	suite.ecs.On("UpdateContainerInstancesStateRequest", &input).Once().Return(&request, &output)
 
-	input := new(ecs.UpdateContainerInstancesStateInput)
-	request := new(request.Request)
-	output := new(ecs.UpdateContainerInstancesStateOutput)
-	m.On("UpdateContainerInstancesStateRequest", input).Once().Return(request, output)
-
-	c := Client{ecs: m}
-	c.UpdateContainerInstancesStateRequest(input)
-
-	m.AssertExpectations(t)
+	req, out := suite.client.UpdateContainerInstancesStateRequest(&input)
+	suite.EqualValues(&request, req)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientUpdateService(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestUpdateService() {
+	input := ecs.UpdateServiceInput{}
+	output := ecs.UpdateServiceOutput{}
+	suite.ecs.On("UpdateService", &input).Once().Return(&output, nil)
 
-	input := new(ecs.UpdateServiceInput)
-	output := new(ecs.UpdateServiceOutput)
-	m.On("UpdateService", input).Once().Return(output, nil)
-
-	c := Client{ecs: m}
-	c.UpdateService(input)
-
-	m.AssertExpectations(t)
+	out, err := suite.client.UpdateService(&input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientUpdateServiceWithContext(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
+func (suite *TestClientSuite) TestUpdateServiceWithContext() {
 	ctx := context.TODO()
-	input := new(ecs.UpdateServiceInput)
-	output := new(ecs.UpdateServiceOutput)
-	m.On("UpdateServiceWithContext", ctx, input).Once().Return(output, nil)
+	input := ecs.UpdateServiceInput{}
+	output := ecs.UpdateServiceOutput{}
+	suite.ecs.On("UpdateServiceWithContext", ctx, &input).Once().Return(&output, nil)
 
-	c := Client{ecs: m}
-	c.UpdateServiceWithContext(ctx, input)
-
-	m.AssertExpectations(t)
+	out, err := suite.client.UpdateServiceWithContext(ctx, &input)
+	suite.NoError(err)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientUpdateServiceRequest(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestUpdateServiceRequest() {
+	input := ecs.UpdateServiceInput{}
+	request := request.Request{}
+	output := ecs.UpdateServiceOutput{}
+	suite.ecs.On("UpdateServiceRequest", &input).Once().Return(&request, &output)
 
-	input := new(ecs.UpdateServiceInput)
-	request := new(request.Request)
-	output := new(ecs.UpdateServiceOutput)
-	m.On("UpdateServiceRequest", input).Once().Return(request, output)
-
-	c := Client{ecs: m}
-	c.UpdateServiceRequest(input)
-
-	m.AssertExpectations(t)
+	req, out := suite.client.UpdateServiceRequest(&input)
+	suite.EqualValues(&request, req)
+	suite.EqualValues(&output, out)
 }
 
-func TestClientWaitUntilServicesInactive(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestWaitUntilServicesInactive() {
+	input := ecs.DescribeServicesInput{}
+	suite.ecs.On("WaitUntilServicesInactive", &input).Once().Return(nil)
 
-	input := new(ecs.DescribeServicesInput)
-	m.On("WaitUntilServicesInactive", input).Once().Return(nil)
-
-	c := Client{ecs: m}
-	c.WaitUntilServicesInactive(input)
-
-	m.AssertExpectations(t)
+	suite.NoError(suite.client.WaitUntilServicesInactive(&input))
 }
 
-func TestClientWaitUntilServicesInactiveWithContext(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
+func (suite *TestClientSuite) TestWaitUntilServicesInactiveWithContext() {
 	ctx := context.TODO()
-	input := new(ecs.DescribeServicesInput)
-	m.On("WaitUntilServicesInactiveWithContext", ctx, input).Once().Return(nil)
+	input := ecs.DescribeServicesInput{}
+	suite.ecs.On("WaitUntilServicesInactiveWithContext", ctx, &input).Once().Return(nil)
 
-	c := Client{ecs: m}
-	c.WaitUntilServicesInactiveWithContext(ctx, input)
-
-	m.AssertExpectations(t)
+	suite.NoError(suite.client.WaitUntilServicesInactiveWithContext(ctx, &input))
 }
 
-func TestClientWaitUntilServicesStable(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestWaitUntilServicesStable() {
+	input := ecs.DescribeServicesInput{}
+	suite.ecs.On("WaitUntilServicesStable", &input).Once().Return(nil)
 
-	input := new(ecs.DescribeServicesInput)
-	m.On("WaitUntilServicesStable", input).Once().Return(nil)
-
-	c := Client{ecs: m}
-	c.WaitUntilServicesStable(input)
-
-	m.AssertExpectations(t)
+	suite.NoError(suite.client.WaitUntilServicesStable(&input))
 }
 
-func TestClientWaitUntilServicesStableWithContext(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
+func (suite *TestClientSuite) TestWaitUntilServicesStableWithContext() {
 	ctx := context.TODO()
-	input := new(ecs.DescribeServicesInput)
-	m.On("WaitUntilServicesStableWithContext", ctx, input).Once().Return(nil)
+	input := ecs.DescribeServicesInput{}
+	suite.ecs.On("WaitUntilServicesStableWithContext", ctx, &input).Once().Return(nil)
 
-	c := Client{ecs: m}
-	c.WaitUntilServicesStableWithContext(ctx, input)
-
-	m.AssertExpectations(t)
+	suite.NoError(suite.client.WaitUntilServicesStableWithContext(ctx, &input))
 }
 
-func TestClientWaitUntilTasksRunning(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestWaitUntilTasksRunning() {
+	input := ecs.DescribeTasksInput{}
+	suite.ecs.On("WaitUntilTasksRunning", &input).Once().Return(nil)
 
-	input := new(ecs.DescribeTasksInput)
-	m.On("WaitUntilTasksRunning", input).Once().Return(nil)
-
-	c := Client{ecs: m}
-	c.WaitUntilTasksRunning(input)
-
-	m.AssertExpectations(t)
+	suite.NoError(suite.client.WaitUntilTasksRunning(&input))
 }
 
-func TestClientWaitUntilTasksRunningWithContext(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
+func (suite *TestClientSuite) TestWaitUntilTasksRunningWithContext() {
 	ctx := context.TODO()
-	input := new(ecs.DescribeTasksInput)
-	m.On("WaitUntilTasksRunningWithContext", ctx, input).Once().Return(nil)
+	input := ecs.DescribeTasksInput{}
+	suite.ecs.On("WaitUntilTasksRunningWithContext", ctx, &input).Once().Return(nil)
 
-	c := Client{ecs: m}
-	c.WaitUntilTasksRunningWithContext(ctx, input)
-
-	m.AssertExpectations(t)
+	suite.NoError(suite.client.WaitUntilTasksRunningWithContext(ctx, &input))
 }
 
-func TestClientWaitUntilTasksStopped(t *testing.T) {
-	m := new(testutils.ECSAPI)
+func (suite *TestClientSuite) TestWaitUntilTasksStopped() {
+	input := ecs.DescribeTasksInput{}
+	suite.ecs.On("WaitUntilTasksStopped", &input).Once().Return(nil)
 
-	input := new(ecs.DescribeTasksInput)
-	m.On("WaitUntilTasksStopped", input).Once().Return(nil)
-
-	c := Client{ecs: m}
-	c.WaitUntilTasksStopped(input)
-
-	m.AssertExpectations(t)
+	suite.NoError(suite.client.WaitUntilTasksStopped(&input))
 }
 
-func TestClientWaitUntilTasksStoppedWithContext(t *testing.T) {
-	m := new(testutils.ECSAPI)
-
+func (suite *TestClientSuite) TestWaitUntilTasksStoppedWithContext() {
 	ctx := context.TODO()
-	input := new(ecs.DescribeTasksInput)
-	m.On("WaitUntilTasksStoppedWithContext", ctx, input).Once().Return(nil)
+	input := ecs.DescribeTasksInput{}
+	suite.ecs.On("WaitUntilTasksStoppedWithContext", ctx, &input).Once().Return(nil)
 
-	c := Client{ecs: m}
-	c.WaitUntilTasksStoppedWithContext(ctx, input)
-
-	m.AssertExpectations(t)
+	suite.NoError(suite.client.WaitUntilTasksStoppedWithContext(ctx, &input))
 }

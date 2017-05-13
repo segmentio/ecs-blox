@@ -21,8 +21,8 @@ type Client struct {
 // New creates a new client instance.
 func New(config *Config) *Client {
 	return &Client{
-		blox: bloxClient(config),
-		ecs:  ecsClient(config),
+		blox: config.getBloxClient(),
+		ecs:  config.getEcsClient(),
 	}
 }
 
@@ -601,8 +601,12 @@ func (c *Client) bloxDescribeTasks(input *ecs.DescribeTasksInput) (*ecs.Describe
 	}
 
 	output := new(ecs.DescribeTasksOutput)
-	output.SetFailures(failures)
-	output.SetTasks(tasks)
+	if len(failures) > 0 {
+		output.SetFailures(failures)
+	}
+	if len(tasks) > 0 {
+		output.SetTasks(tasks)
+	}
 	return output, nil
 }
 
@@ -620,15 +624,4 @@ func (c *Client) bloxRecordUnsupported(method string, input interface{}) {
 		"method": method,
 		"input":  input,
 	}).Warn("unable to support blox for method, using ECS directly")
-}
-
-// private helpers
-
-func ecsClient(config *Config) *ecs.ECS {
-	return ecs.New(config.Session)
-}
-
-func bloxClient(config *Config) *blox.BloxCSS {
-	t := blox.DefaultTransportConfig().WithHost(config.BloxURL)
-	return blox.NewHTTPClientWithConfig(nil, t)
 }
