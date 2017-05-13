@@ -7,6 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/request"
 	"github.com/aws/aws-sdk-go/service/ecs"
 	"github.com/aws/aws-sdk-go/service/ecs/ecsiface"
+	blox "github.com/segmentio/ecs-blox/blox/client"
 	"github.com/segmentio/ecs-blox/testutils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

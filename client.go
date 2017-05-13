@@ -7,14 +7,14 @@ import (
 	"github.com/aws/aws-sdk-go/aws/request"
 	"github.com/aws/aws-sdk-go/service/ecs"
 	"github.com/aws/aws-sdk-go/service/ecs/ecsiface"
-	blox "github.com/blox/blox/cluster-state-service/swagger/v1/generated/client"
-	"github.com/blox/blox/cluster-state-service/swagger/v1/generated/client/operations"
+	blox "github.com/segmentio/ecs-blox/blox/client"
+	"github.com/segmentio/ecs-blox/blox/client/operations"
 	"github.com/segmentio/kit/log"
 	"github.com/segmentio/kit/stats"
 )
 
 type Client struct {
-	blox *blox.BloxCSS
+	blox *blox.BloxClusterStateService
 	ecs  ecsiface.ECSAPI
 }
 

@@ -7,7 +7,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ecs"
-	blox "github.com/blox/blox/cluster-state-service/swagger/v1/generated/models"
+	blox "github.com/segmentio/ecs-blox/blox/models"
 )
 
 const bloxTimeFormat = "2006-01-02T15:04:05Z"
